@@ -19,7 +19,8 @@
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
     "mongoose": "^8.5.3",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "serve": "^14.2.3"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
