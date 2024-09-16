@@ -19,7 +19,7 @@ export const createOrUpdateReward =
       };
 
       const { data } = await axios.post(
-        `spinivers_backend.railway.internal/api/rewards/${walletAddress}`,
+        `/api/rewards/${walletAddress}`,
         rewardData,
         config
       );
@@ -47,9 +47,7 @@ export const createOrUpdateReward =
 export const getRewardsByWalletAddress =
   (walletAddress) => async (dispatch) => {
     try {
-      const res = await axios.get(
-        `spinivers_backend.railway.internal/api/rewards/${walletAddress}`
-      );
+      const res = await axios.get(`/api/rewards/${walletAddress}`);
       // console.log("Rewards fetched:", res.data); // Log the fetched rewards
       dispatch({
         type: GET_REWARDS_SUCCESS,
@@ -69,9 +67,7 @@ export const getTodayRewardStats = () => async (dispatch, getState) => {
   try {
     dispatch({ type: REWARD_STATS_TODAY_REQUEST });
 
-    const { data } = await axios.get(
-      "spinivers_backend.railway.internal/api/rewards/stats/today"
-    );
+    const { data } = await axios.get("/api/rewards/stats/today");
 
     dispatch({
       type: REWARD_STATS_TODAY_SUCCESS,

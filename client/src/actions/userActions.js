@@ -32,7 +32,7 @@ export const login = (walletAddress) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      "spinivers_backend.railway.internal/api/users/login",
+      "/api/users/login",
       { walletAddress },
       config
     );
@@ -61,7 +61,7 @@ export const register = (walletAddress, freeSpins) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      "spinivers_backend.railway.internal/api/users/register",
+      "/api/users/register",
       { walletAddress, freeSpins },
       config
     );
@@ -83,7 +83,7 @@ export const getUserDetails = (walletAddress) => async (dispatch) => {
   try {
     dispatch({ type: USER_DETAILS_REQUEST });
 
-    const { data } = await axios.get(`spinivers_backend.railway.internal/api/users/${walletAddress}`);
+    const { data } = await axios.get(`/api/users/${walletAddress}`);
 
     dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
   } catch (error) {
@@ -109,7 +109,7 @@ export const updateUserProfile = (walletAddress, name) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      "spinivers_backend.railway.internal/api/users/profile",
+      "/api/users/profile",
       { walletAddress, name },
       config
     );
@@ -130,7 +130,7 @@ export const listUsers = () => async (dispatch, getState) => {
   try {
     dispatch({ type: USER_LIST_REQUEST });
 
-    const { data } = await axios.get("spinivers_backend.railway.internal/api/users");
+    const { data } = await axios.get("/api/users");
 
     dispatch({ type: USER_LIST_SUCCESS, payload: data });
   } catch (error) {
@@ -156,7 +156,7 @@ export const updateSpins = (walletAddress) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      "spinivers_backend.railway.internal/api/users/spins",
+      "/api/users/spins",
       { walletAddress },
       config
     );
