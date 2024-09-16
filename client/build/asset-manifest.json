@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/Radhikachandugade/Spinivers_frontend/static/js/main.4c7852be.js",
-    "index.html": "/Radhikachandugade/Spinivers_frontend/index.html",
-    "main.4c7852be.js.map": "/Radhikachandugade/Spinivers_frontend/static/js/main.4c7852be.js.map"
+    "main.js": "/static/js/main.4e5d85cf.js",
+    "index.html": "/index.html",
+    "main.4e5d85cf.js.map": "/static/js/main.4e5d85cf.js.map"
   },
   "entrypoints": [
-    "static/js/main.4c7852be.js"
+    "static/js/main.4e5d85cf.js"
   ]
 }
