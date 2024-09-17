@@ -31,6 +31,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
+import html2canvas from "html2canvas";
 import { Link as RouterLink } from "react-router-dom";
 import { Connection, PublicKey } from "@solana/web3.js";
 import {
@@ -49,6 +50,8 @@ import {
   getTodayRewardStats,
 } from "../actions/rewardActions";
 import { IoInformationCircleOutline } from "react-icons/io5";
+import SpinComponent from "../Components/SpinComponent";
+import ShareRewards from "../Components/ShareRewards";
 
 const Wheel = () => {
   const [display, setDisplay] = useState("-");
@@ -56,6 +59,8 @@ const Wheel = () => {
   const [isSpinDisabled, setSpinDisabled] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
   const [selectedPrize, setSelectedPrize] = useState(null);
+  const [screenshotUrl, setScreenshotUrl] = useState(null);
+  const rewardRef = useRef(null);
   const wheelRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useDispatch();
@@ -114,6 +119,8 @@ const Wheel = () => {
       getRewardsByWalletAddress(walletAddress)
     );
     const existingRewards = existingRewardsResponse?.payload || [];
+
+    console.log(selectedPrize);
 
     // Prepare a new prizes array based on existing rewards
     const updatedPrizes =
@@ -323,6 +330,17 @@ const Wheel = () => {
     );
   };
 
+  const shareMessage = selectedPrize
+    ? `🎉 I just won ${selectedPrize.qty} of ${selectedPrize.name} on Spiniverse! 🎁💰\n\n#Spiniverse #Rewards\nCheck it out: ${screenshotUrl}`
+    : `I just won an awesome prize on Spiniverse! 🎁💰 #Spiniverse #Rewards`;
+
+  const encodedShareMessage = encodeURIComponent(shareMessage);
+  // Create share URLs that include the image
+  // Create share URLs that include the message
+  const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=&quote=${encodedShareMessage}`;
+  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodedShareMessage}`;
+  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedShareMessage}`;
+
   const resetWheel = () => {
     if (wheelRef.current) {
       wheelRef.current.style.transition = "none";
@@ -421,64 +439,7 @@ const Wheel = () => {
           gap={5}
         >
           <Box display="flex" flexDirection="row" alignItems="center" gap={3}>
-            <Button
-              variant="solid"
-              color="rgb(242, 240, 245)"
-              border="1px solid rgb(140, 65, 245)"
-              backgroundColor="rgb(59, 9, 128)"
-              borderRadius="16px"
-              boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-              opacity="1"
-              _hover="none"
-              _active="none"
-              fontSize="1.2rem"
-              size={{ base: "md", md: "md", lg: "lg" }}
-            >
-              free spins{" "}
-            </Button>
-            <Tooltip
-              label="know more about free spin"
-              hasArrow
-              arrowSize={8}
-              bg="rgba(0, 0, 0, 0.8)"
-              backdropFilter="blur(5px)"
-              border="1px solid rgba(255,255,255,0.1)"
-              boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-              borderRadius="20"
-            >
-              <span>
-                <IoInformationCircleOutline />
-              </span>
-            </Tooltip>
-            <Button
-              variant="solid"
-              color="rgb(242, 240, 245)"
-              border="1px solid rgb(140, 65, 245)"
-              backgroundColor="rgb(59, 9, 128)"
-              borderRadius="16px"
-              boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-              opacity="1"
-              _hover="none"
-              _active="none"
-              fontSize="1.2rem"
-              size={{ base: "md", md: "md", lg: "lg" }}
-            >
-              paid spins
-            </Button>
-            <Tooltip
-              label="know more about paid spin"
-              hasArrow
-              arrowSize={8}
-              bg="rgba(0, 0, 0, 0.8)"
-              backdropFilter="blur(5px)"
-              border="1px solid rgba(255,255,255,0.1)"
-              boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-              borderRadius="20"
-            >
-              <span>
-                <IoInformationCircleOutline />
-              </span>
-            </Tooltip>
+            <SpinComponent />
           </Box>
 
           <Box
@@ -569,13 +530,9 @@ const Wheel = () => {
                 transform: "translateY(-2px)",
                 transition: "transform 34ms",
               }}
-              isDisabled={isSpinDisabled}
+              isDisabled={!isConnected || user?.spins === 0} // Disable if not connected or spins are 0
             >
-              {!isConnected
-                ? "SPIN" // Show "SPIN" if wallet is not connected
-                : user?.spins > 0 // If wallet is connected, show spins left or no spins left
-                ? `${user.spins} Spin${user.spins > 1 ? "s" : ""} Left`
-                : "No Spins Left"}
+              {"SPIN"}
             </Button>
           </Box>
 
@@ -626,7 +583,40 @@ const Wheel = () => {
                 </Link>
               </ModalBody>
               <ModalFooter my="5"></ModalFooter>
+              <Flex justify="center" align="center" marginTop="10px">
+                <Button
+                  as="a"
+                  href={facebookShareUrl}
+                  target="_blank"
+                  margin="5px"
+                  colorScheme="facebook"
+                  rel="noopener noreferrer"
+                >
+                  Share on Facebook
+                </Button>
+                <Button
+                  as="a"
+                  href={twitterShareUrl}
+                  target="_blank"
+                  margin="5px"
+                  colorScheme="twitter"
+                  rel="noopener noreferrer"
+                >
+                  Share on Twitter
+                </Button>
+                <Button
+                  as="a"
+                  href={linkedinShareUrl}
+                  target="_blank"
+                  margin="5px"
+                  colorScheme="linkedin"
+                  rel="noopener noreferrer"
+                >
+                  Share on LinkedIn
+                </Button>
+              </Flex>
             </ModalContent>
+            {/* <ShareRewards /> */}
           </Modal>
         </Box>
         <Box>
