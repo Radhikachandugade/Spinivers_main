@@ -4,8 +4,8 @@ import { Box, Button, Tooltip } from "@chakra-ui/react";
 import { IoInformationCircleOutline } from "react-icons/io5";
 
 const SpinComponent = () => {
-  const [isSpinDisabled, setSpinDisabled] = useState(true);
-  const [isConnected, setIsConnected] = useState(true); // Ensure you set this correctly
+  // const [isSpinDisabled, setSpinDisabled] = useState(true);
+  const [isConnected, setIsConnected] = useState(true);
 
   const userLogin = useSelector((state) => state.userLogin || {});
   const { userInfo } = userLogin;
@@ -13,9 +13,9 @@ const SpinComponent = () => {
   const userDetails = useSelector((state) => state.userDetails || {});
   const { user } = userDetails;
 
-  useEffect(() => {
-    setSpinDisabled(!isConnected || user?.spins <= 0);
-  }, [isConnected, user]);
+  // useEffect(() => {
+  //   setSpinDisabled(!isConnected || user?.spins <= 0);
+  // }, [isConnected, user]);
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={5}>
@@ -39,11 +39,11 @@ const SpinComponent = () => {
             ? "Free Spins"
             : user?.spins > 0
             ? `${user.spins} Spin${user.spins > 1 ? "s" : ""} Left`
-            : "0 Spins Left"}
+            : "Free Spins = 0"}
         </Button>
 
         <Tooltip
-          label="Know more about free spin"
+          label="Know more about Free Spin"
           hasArrow
           arrowSize={8}
           bg="rgba(0, 0, 0, 0.8)"
@@ -72,11 +72,11 @@ const SpinComponent = () => {
           size={{ base: "md", md: "md", lg: "lg" }}
           disabled={user?.spins > 0} // Disable if free spins are available
         >
-          Paid Spins
+          Bonus Spins = 0
         </Button>
 
         <Tooltip
-          label="Know more about paid spin"
+          label="Know more about Bonus Spin"
           hasArrow
           arrowSize={8}
           bg="rgba(0, 0, 0, 0.8)"

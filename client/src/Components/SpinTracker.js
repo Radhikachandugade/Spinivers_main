@@ -5,10 +5,13 @@ import {
   Progress,
   Stack,
   Text,
+  Tooltip,
+  Box,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { listUsers } from "../actions/userActions";
+import { IoInformationCircleOutline } from "react-icons/io5";
 import { FulfillingBouncingCircleSpinner } from "react-epic-spinners";
 
 const SpinTracker = () => {
@@ -50,9 +53,26 @@ const SpinTracker = () => {
         color="white"
       >
         <Stack p={5} spacing={5}>
-          <Text fontSize="xl" fontWeight="semibold">
-            0.5% Token Burn on {targetSpins} Spins
-          </Text>
+          <Box display="flex" flexDirection="row" alignItems="center" gap={3}>
+            <Text fontSize="xl" fontWeight="semibold">
+              0.5% Token Burn on {targetSpins} Spins
+            </Text>
+            <Tooltip
+              label="Know more about Burn mechanism"
+              hasArrow
+              arrowSize={8}
+              bg="rgba(0, 0, 0, 0.8)"
+              backdropFilter="blur(5px)"
+              border="1px solid rgba(255,255,255,0.1)"
+              boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
+              borderRadius="20"
+            >
+              <span>
+                <IoInformationCircleOutline />
+              </span>
+            </Tooltip>
+          </Box>
+
           <Progress
             value={totalSpins}
             size="xs"
