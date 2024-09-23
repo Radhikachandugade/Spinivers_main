@@ -17,6 +17,7 @@ import {
   USER_UPDATE_PROFILE_REQUEST,
   USER_UPDATE_PROFILE_SUCCESS,
   USER_UPDATE_PROFILE_FAIL,
+  USER_CONNECTION_STATUS,
 } from "../constants/userConstants";
 
 // User login reducer
@@ -97,6 +98,14 @@ export const userUpdateProfileReducer = (state = {}, action) => {
       return { loading: false, success: true, userInfo: action.payload };
     case USER_UPDATE_PROFILE_FAIL:
       return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+export const userConnectedReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER_CONNECTION_STATUS:
+      return { userConnection: action.payload };
     default:
       return state;
   }

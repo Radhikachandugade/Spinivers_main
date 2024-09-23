@@ -13,10 +13,6 @@ const SpinComponent = () => {
   const userDetails = useSelector((state) => state.userDetails || {});
   const { user } = userDetails;
 
-  // useEffect(() => {
-  //   setSpinDisabled(!isConnected || user?.spins <= 0);
-  // }, [isConnected, user]);
-
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={5}>
       <Box display="flex" flexDirection="row" alignItems="center" gap={3}>
@@ -36,26 +32,25 @@ const SpinComponent = () => {
           disabled={user?.spins === 0}
         >
           {!isConnected
-            ? "Free Spins"
+            ? "Daily Free Spins"
             : user?.spins > 0
-            ? `${user.spins} Spin${user.spins > 1 ? "s" : ""} Left`
-            : "Free Spins = 0"}
+            ? `Daily Free Spin${user.spins > 1 ? "s" : ""} : ${user.spins} `
+            : "Daily Free Spins : 0"}
+          <Tooltip
+            label="Know more about Free Spin"
+            hasArrow
+            arrowSize={8}
+            bg="rgba(0, 0, 0, 0.8)"
+            backdropFilter="blur(5px)"
+            border="1px solid rgba(255,255,255,0.1)"
+            boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
+            borderRadius="20"
+          >
+            <span style={{ marginLeft: "8px" }}>
+              <IoInformationCircleOutline />
+            </span>
+          </Tooltip>
         </Button>
-
-        <Tooltip
-          label="Know more about Free Spin"
-          hasArrow
-          arrowSize={8}
-          bg="rgba(0, 0, 0, 0.8)"
-          backdropFilter="blur(5px)"
-          border="1px solid rgba(255,255,255,0.1)"
-          boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-          borderRadius="20"
-        >
-          <span>
-            <IoInformationCircleOutline />
-          </span>
-        </Tooltip>
 
         {/* Paid Spin Button */}
         <Button
@@ -72,23 +67,22 @@ const SpinComponent = () => {
           size={{ base: "md", md: "md", lg: "lg" }}
           disabled={user?.spins > 0} // Disable if free spins are available
         >
-          Bonus Spins = 0
+          Bonus Spins : 0
+          <Tooltip
+            label="Know more about Bonus Spin"
+            hasArrow
+            arrowSize={8}
+            bg="rgba(0, 0, 0, 0.8)"
+            backdropFilter="blur(5px)"
+            border="1px solid rgba(255,255,255,0.1)"
+            boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
+            borderRadius="20"
+          >
+            <span style={{ marginLeft: "8px" }}>
+              <IoInformationCircleOutline />
+            </span>
+          </Tooltip>
         </Button>
-
-        <Tooltip
-          label="Know more about Bonus Spin"
-          hasArrow
-          arrowSize={8}
-          bg="rgba(0, 0, 0, 0.8)"
-          backdropFilter="blur(5px)"
-          border="1px solid rgba(255,255,255,0.1)"
-          boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-          borderRadius="20"
-        >
-          <span>
-            <IoInformationCircleOutline />
-          </span>
-        </Tooltip>
       </Box>
     </Box>
   );

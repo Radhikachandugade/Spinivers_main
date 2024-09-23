@@ -48,7 +48,7 @@ const SpinTracker = () => {
         borderRadius="3xl"
         p="5"
         direction="column"
-        mx="20"
+        mx="10"
         my={10}
         color="white"
       >

@@ -18,6 +18,7 @@ import {
   USER_UPDATE_PROFILE_REQUEST,
   USER_UPDATE_PROFILE_SUCCESS,
   USER_UPDATE_PROFILE_FAIL,
+  USER_CONNECTION_STATUS,
 } from "../constants/userConstants";
 
 // Login user
@@ -171,4 +172,10 @@ export const updateSpins = (walletAddress) => async (dispatch) => {
           : error.message,
     });
   }
+};
+export const userConnectionStatus = (status) => (dispatch) => {
+  dispatch({
+    type: USER_CONNECTION_STATUS,
+    payload: status,
+  });
 };
