@@ -91,7 +91,7 @@ const WheelComponent = () => {
     setWalletAddress(savedWalletAddress);
   }, [data]);
 
-  const drawWheel = () => {
+  const drawWheel = (winningSegmentIndex = null) => {
     const canvas = wheelRef.current;
     const ctx = canvas.getContext("2d");
     const numSegments = data.length;
@@ -254,6 +254,25 @@ const WheelComponent = () => {
       13,
       true // Inner radius circles
     );
+    const drawWinningSegment = (ctx, winningSegmentIndex) => {
+      const numSegments = data.length;
+      const segmentAngle = (2 * Math.PI) / numSegments;
+
+      ctx.save();
+      ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // Highlight color (red)
+      const startAngle = segmentAngle * winningSegmentIndex;
+      const endAngle = segmentAngle * (winningSegmentIndex + 1);
+
+      ctx.beginPath();
+      ctx.arc(radius, radius, radius, startAngle, endAngle);
+      ctx.arc(radius, radius, radius * 0.2, endAngle, startAngle, true);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+    if (winningSegmentIndex !== null) {
+      drawWinningSegment(ctx, winningSegmentIndex);
+    }
   };
 
   const [rewardData, setRewardData] = useState({
@@ -288,6 +307,8 @@ const WheelComponent = () => {
     // Set the display state to show the winning prize
     setDisplay(winningPrize);
     setSelectedPrize({ name: winningPrize, qty: 1 });
+
+    drawWheel(segmentNumber);
 
     // Update the reward data
     setRewardData((prevData) => {
@@ -333,9 +354,11 @@ const WheelComponent = () => {
     // Calculate the exact degree for the center of this segment
     const segmentCenterAngle =
       segmentAngle * winningSegmentIndex + segmentAngle / 2;
+    console.log(segmentCenterAngle);
 
     // Calculate the total rotation needed to align the wheel so that the segment's center is at the 90-degree mark
-    const totalRotation = totalDegrees - segmentCenterAngle;
+    const totalRotation = totalDegrees + (360 - segmentCenterAngle);
+    console.log("rotate", totalRotation);
 
     // Spin the wheel
     wheelRef.current.style.transition = "all 5s ease-out";
@@ -350,7 +373,7 @@ const WheelComponent = () => {
           await dispatch(updateSpins(walletAddress));
           await dispatch(getUserDetails(walletAddress));
           await dispatch(listUsers());
-        }, 1000);
+        }, 500);
       },
       { once: true }
     );
@@ -470,7 +493,7 @@ const WheelComponent = () => {
           fontWeight="bold"
           fontSize="2xl"
           _disabled={{ opacity: 0.9, bg: "#fed97e" }}
-          isDisabled={!isConnected || user?.spins === 0}
+          // isDisabled={!isConnected || user?.spins === 0}
         >
           SPIN
         </Button>
