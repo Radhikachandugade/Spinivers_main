@@ -25,14 +25,17 @@ import {
   Flex,
   Box,
   Image,
+  IconButton,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import RewardSharing from "../Components/RewardSharing";
 import { getTodayRewardStats } from "../actions/rewardActions";
 // import useSpinDisabled from "../Screens/Wheel";
+import { ImSpinner4 } from "react-icons/im";
 
 const WheelComponent = () => {
   const [display, setDisplay] = useState("-");
+  // console.log(display);
   const [selectedPrize, setSelectedPrize] = useState(null);
   const wheelRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -66,19 +69,19 @@ const WheelComponent = () => {
   };
   // const isSpinDisabled = useSpinDisabled(isConnected, user);
 
-  const oddGradientColors = ["#5D26C1", "#a17fe0"];
-  const evenGradientColors = ["#373B44", "#4286f4"];
+  const oddGradientColors = ["#ff8a00", "#ff8a00"];
+  const evenGradientColors = ["#ffc501", "#ffc501"];
 
   const data = [
-    { option: "WHISK Airdrop" },
-    { option: "CG Tokens Airdrop" },
-    { option: "Hardware Wallet" },
-    { option: "Solana Airdrops" },
-    { option: "Exclusive NFTs" },
-    { option: "Better Luck Next Time" },
-    { option: "SLAPHERO Airdrop" },
-    { option: "HTH Airdrop" },
     { option: "Amazon Gift Card" },
+    { option: "HTH Airdrop" },
+    { option: "SLAPHERO Airdrop" },
+    { option: "Better Luck Next Time" },
+    { option: "Exclusive NFTs" },
+    { option: "Solana Airdrops" },
+    { option: "Hardware Wallet" },
+    { option: "CG Tokens Airdrop" },
+    { option: "WHISK Airdrop" },
     { option: "Maestro Bot Subscription " },
   ];
 
@@ -95,11 +98,13 @@ const WheelComponent = () => {
     const canvasSize = 500;
     const radius = canvasSize / 2;
     const segmentAngle = (2 * Math.PI) / numSegments;
+    const borderWidth = 10;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.shadowBlur = 15;
     ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
 
+    // Draw the wheel segments
     data.forEach((segment, index) => {
       const startAngle = segmentAngle * index;
       const endAngle = segmentAngle * (index + 1);
@@ -135,6 +140,7 @@ const WheelComponent = () => {
       ctx.restore();
     });
 
+    // Draw the segment lines
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 4;
     data.forEach((_, index) => {
@@ -150,7 +156,8 @@ const WheelComponent = () => {
       ctx.stroke();
     });
 
-    const drawBorder = (size, gradientColors, width) => {
+    // Function to draw the border and circles
+    const drawBorder = (size, gradientColors, width, isInner = false) => {
       ctx.beginPath();
       ctx.arc(radius, radius, size, 0, 2 * Math.PI);
       ctx.lineWidth = width;
@@ -171,7 +178,7 @@ const WheelComponent = () => {
       const shadowGradient = ctx.createRadialGradient(
         radius,
         radius,
-        size + 3,
+        size,
         radius,
         radius,
         size
@@ -182,48 +189,73 @@ const WheelComponent = () => {
       ctx.strokeStyle = shadowGradient;
       ctx.stroke();
       ctx.restore();
+
+      const numCircles = isInner ? 8 : 30; // Adjust number of circles for inner radius
+      const circleRadius = isInner ? 4 : 5; // Radius of the white circles
+
+      for (let i = 0; i < numCircles; i++) {
+        const angle = ((2 * Math.PI) / numCircles) * i;
+        const circleOffset = isInner ? radius * 0.19 : radius - borderWidth;
+        const x = radius + circleOffset * Math.cos(angle);
+        const y = radius + circleOffset * Math.sin(angle);
+
+        ctx.shadowColor = "white";
+        ctx.shadowBlur = 5; // Blur radius for the shadow
+        ctx.shadowOffsetX = 0; // No horizontal offset
+        ctx.shadowOffsetY = 2;
+        ctx.beginPath();
+        ctx.arc(x, y, circleRadius, 0, 2 * Math.PI);
+        ctx.fillStyle = "white";
+        ctx.fill();
+      }
     };
 
+    // Draw the outer border and circles
     drawBorder(
-      radius - 5,
+      radius - 10,
       [
-        [0, "#FFEBA1"],
-        [0.05, "#FFEC85"],
-        [0.1, "#ED8F03"],
-        [0.15, "#FFD700"],
-        [0.2, "#FFD700"],
-        [0.3, "#ED8F03"],
-        [0.4, "#FFD700"],
-        [0.5, "#FFD700"],
-        [0.6, "#ED8F03"],
-        [0.65, "#FFEC85"],
-        [0.75, "#FFEBA1"],
-        [0.85, "#ED8F03"],
-        [1, "#FFEBA1"],
+        [0, "#fdf698"],
+        [0.05, "#b78a36"],
+        [0.1, "#b78a36"],
+        // [0.15, "#f3dd72"],
+        [0.2, "#f3dd72"],
+        [0.3, "#b78a36"],
+        [0.35, "#f3dd72"],
+        [0.4, "#a46f23"],
+        [0.5, "#fdf698"],
+        [0.6, "#d4b051"],
+        [0.7, "#f3dd72"],
+        [0.8, "#b78a36"],
+        [0.9, "#a46f23"],
+        [1, "#f3dd72"],
       ],
-      11
+      20,
+      false // Outer radius circles
     );
 
+    // Draw the inner border and circles
     drawBorder(
       radius * 0.2 - 4,
       [
-        [0, "#FFEBA1"],
-        [0.05, "#FFEC85"],
-        [0.1, "#ED8F03"],
-        [0.15, "#FFD700"],
-        [0.2, "#FFD700"],
-        [0.3, "#ED8F03"],
-        [0.4, "#FFD700"],
-        [0.5, "#FFD700"],
-        [0.6, "#ED8F03"],
-        [0.65, "#FFEC85"],
-        [0.75, "#FFEBA1"],
-        [0.85, "#ED8F03"],
-        [1, "#FFEBA1"],
+        [0, "#ffd372"],
+        [0.05, "#b87407"],
+        // [0.1, "#ffd372"],
+        // [0.15, "#b87407"],
+        // [0.2, "#ffd372"],
+        // [0.3, "#b87407"],
+        [0.4, "#ffd372"],
+        [0.5, "#b87407"],
+        // [0.6, "#ffd372"],
+        // [0.65, "#b87407"],
+        [0.75, "#ffd372"],
+        [0.85, "#b87407"],
+        [1, "#ffd372"],
       ],
-      8
+      13,
+      true // Inner radius circles
     );
   };
+
   const [rewardData, setRewardData] = useState({
     walletAddress: "",
     prizes: [
@@ -238,18 +270,28 @@ const WheelComponent = () => {
     earnings: 0,
   });
 
-  const handleWin = (actualDeg) => {
-    const adjustedDeg = (actualDeg + 90) % 360;
+  const handleWin = (finalDeg) => {
+    const numSegments = data.length;
+    const segmentAngle = 360 / numSegments;
 
-    const segmentNumber = Math.floor(adjustedDeg / 36);
-    const winningPrize = data[segmentNumber].option;
+    // Adjust the final degree to account for the offset and calculate the winning segment
+    console.log(finalDeg);
+    const adjustedDeg = finalDeg;
 
+    // Find the segment number by dividing the adjusted degree by the segment angle
+    const segmentNumber = Math.floor(adjustedDeg / segmentAngle);
+    console.log(segmentNumber);
+
+    // Get the winning prize
+    const winningPrize = data[segmentNumber]?.option || "No prize";
+
+    // Set the display state to show the winning prize
     setDisplay(winningPrize);
     setSelectedPrize({ name: winningPrize, qty: 1 });
 
+    // Update the reward data
     setRewardData((prevData) => {
       const updatedPrizes = [...prevData.prizes];
-
       const existingPrizeIndex = updatedPrizes.findIndex(
         (prize) => prize.name === winningPrize
       );
@@ -269,6 +311,7 @@ const WheelComponent = () => {
       return { ...prevData, prizes: updatedPrizes };
     });
 
+    // Open the modal to display the winning prize
     onOpen();
   };
 
@@ -276,12 +319,26 @@ const WheelComponent = () => {
     setDisplay("-");
     wheelRef.current.style.pointerEvents = "none";
 
-    const newDeg = Math.floor(2000 + Math.random() * 2000);
-    const adjustedDeg = newDeg % 360;
-    const finalDeg = Math.round(adjustedDeg / 36) * 36;
-    const totalRotation = newDeg - adjustedDeg + finalDeg;
+    // Calculate a random number of total degrees for the spin (e.g., between 2000 to 4000 degrees)
+    const totalDegrees = Math.floor(2000 + Math.random() * 2000);
 
-    wheelRef.current.style.transition = "all 5s ease-in-out";
+    // Calculate the exact degree where the wheel should stop relative to the center of the segment
+    const numSegments = data.length;
+    const segmentAngle = 360 / numSegments;
+
+    // Find the index of the winning segment randomly
+    const winningSegmentIndex = Math.floor(Math.random() * numSegments);
+    console.log(winningSegmentIndex);
+
+    // Calculate the exact degree for the center of this segment
+    const segmentCenterAngle =
+      segmentAngle * winningSegmentIndex + segmentAngle / 2;
+
+    // Calculate the total rotation needed to align the wheel so that the segment's center is at the 90-degree mark
+    const totalRotation = totalDegrees - segmentCenterAngle;
+
+    // Spin the wheel
+    wheelRef.current.style.transition = "all 5s ease-out";
     wheelRef.current.style.transform = `rotate(${totalRotation}deg)`;
 
     wheelRef.current.addEventListener(
@@ -289,7 +346,7 @@ const WheelComponent = () => {
       async () => {
         wheelRef.current.style.pointerEvents = "auto";
         setTimeout(async () => {
-          handleWin(finalDeg);
+          handleWin(segmentCenterAngle); // Use segmentCenterAngle for accuracy
           await dispatch(updateSpins(walletAddress));
           await dispatch(getUserDetails(walletAddress));
           await dispatch(listUsers());
@@ -387,18 +444,50 @@ const WheelComponent = () => {
         gap="5"
       >
         <canvas ref={wheelRef} width="500" height="500"></canvas>
+        <Button
+          bgColor="#fed97e"
+          aria-label="Search database"
+          position="absolute"
+          onClick={spinWheel}
+          borderRadius="full"
+          zIndex="1"
+          size="lg"
+          height="80px"
+          width="80px"
+          variant="outline"
+          border="4px solid white"
+          boxShadow="rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px"
+          icon={<ImSpinner4 size="50" />}
+          style={{
+            size: "50",
+            top: "48%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+          _hover={{ bgColor: "none" }}
+          color="#ac1f00"
+          // letterSpacing="0.2rem"
+          fontWeight="bold"
+          fontSize="2xl"
+          _disabled={{ opacity: 0.9, bg: "#fed97e" }}
+          // isDisabled={!isConnected || user?.spins === 0}
+        >
+          SPIN
+        </Button>
         <Image
           src="../assets/marker.png"
           alt="Marker"
           position="absolute"
-          width="19%"
-          zIndex="1"
+          width="100%"
+          zIndex="0"
           style={{
-            top: "39.3%",
-            left: "49.9%",
+            size: "50",
+            top: "45.3%",
+            left: "50%",
             transform: "translate(-50%, -50%)",
           }}
         />
+
         <Box
           as="button"
           position="relative"
@@ -439,33 +528,21 @@ const WheelComponent = () => {
             left="0"
             w="100%"
             h="100%"
-            borderRadius="12px"
+            borderRadius="full"
             bg="linear-gradient( to left, hsl(340, 100%, 16%) 0%, hsl(340, 100%, 32%) 8%, hsl(340, 100%, 32%) 92%, hsl(340, 100%, 16%) 100% )"
           />
-          <Button
+          {/* <IconButton
+            colorScheme="blue"
+            aria-label="Search database"
             onClick={spinWheel}
-            position="relative"
-            display="block"
-            px={{ base: "12px 27px", md: "10" }}
-            borderRadius="12px"
-            fontSize={{ base: "1.1rem", md: "3xl" }}
-            size="lg"
-            color="#f4bb1b"
-            bgGradient="linear-gradient(135deg, #460036, #5c403c, #f4bb1b)"
-            transform="translateY(-4px)"
-            transition="transform 600ms cubic-bezier(.3, .7, .4, 1)"
-            _hover={{
-              transform: "translateY(-6px)",
-              transition: "transform 250ms cubic-bezier(.3, .7, .4, 1.5)",
+            borderRadius="full"
+            icon={<ImSpinner4 />}
+            style={{
+              top: "39.3%",
+              left: "49.9%",
+              transform: "translate(-50%, -50%)",
             }}
-            _active={{
-              transform: "translateY(-2px)",
-              transition: "transform 34ms",
-            }}
-            isDisabled={!isConnected || user?.spins === 0}
-          >
-            {"SPIN THE WHEEL"}
-          </Button>
+          /> */}
         </Box>
       </Box>
 
