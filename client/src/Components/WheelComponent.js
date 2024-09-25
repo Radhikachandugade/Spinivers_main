@@ -470,7 +470,7 @@ const WheelComponent = () => {
           fontWeight="bold"
           fontSize="2xl"
           _disabled={{ opacity: 0.9, bg: "#fed97e" }}
-          // isDisabled={!isConnected || user?.spins === 0}
+          isDisabled={!isConnected || user?.spins === 0}
         >
           SPIN
         </Button>
