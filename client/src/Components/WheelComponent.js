@@ -341,7 +341,7 @@ const WheelComponent = () => {
     wheelRef.current.style.pointerEvents = "none";
 
     // Calculate a random number of total degrees for the spin (e.g., between 2000 to 4000 degrees)
-    const totalDegrees = Math.floor(2000 + Math.random() * 2000);
+    const totalDegrees = 2070;
 
     // Calculate the exact degree where the wheel should stop relative to the center of the segment
     const numSegments = data.length;
@@ -354,10 +354,9 @@ const WheelComponent = () => {
     // Calculate the exact degree for the center of this segment
     const segmentCenterAngle =
       segmentAngle * winningSegmentIndex + segmentAngle / 2;
-    console.log(segmentCenterAngle);
 
-    // Calculate the total rotation needed to align the wheel so that the segment's center is at the 90-degree mark
-    const totalRotation = totalDegrees + (360 - segmentCenterAngle);
+    // Calculate the total rotation needed to align the winning segment's center to the 90-degree mark
+    const totalRotation = totalDegrees - segmentCenterAngle; // Adjust to 90 degrees
     console.log("rotate", totalRotation);
 
     // Spin the wheel
@@ -373,7 +372,7 @@ const WheelComponent = () => {
           await dispatch(updateSpins(walletAddress));
           await dispatch(getUserDetails(walletAddress));
           await dispatch(listUsers());
-        }, 500);
+        }, 3000);
       },
       { once: true }
     );
@@ -493,7 +492,7 @@ const WheelComponent = () => {
           fontWeight="bold"
           fontSize="2xl"
           _disabled={{ opacity: 0.9, bg: "#fed97e" }}
-          // isDisabled={!isConnected || user?.spins === 0}
+          isDisabled={!isConnected || user?.spins === 0}
         >
           SPIN
         </Button>
