@@ -139,6 +139,15 @@ const updateSpins = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ walletAddress });
 
+  // Logic to handle spins and cooldown based on current spins
+  user.freeSpins = Math.max(user.freeSpins - 1, 0); // Decrease free spins
+  await user.save();
+
+  res.json({
+    spins: user.spins,
+    nextSpinTime: user.nextSpinTime,
+  });
+
   if (user) {
     if (user.spins > 0) {
       if (user.freeSpins > 0) {

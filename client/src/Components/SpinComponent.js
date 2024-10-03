@@ -61,7 +61,15 @@ const SpinComponent = () => {
           borderRadius="16px"
           boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
           opacity={user?.spins > 0 ? 0.6 : 1} // Disable paid spins if free spins left
-          _hover={user?.spins > 0 ? "none" : undefined}
+          _hover={{
+            bgColor: user?.spins > 0 ? "none" : "rgb(59, 9, 128)",
+            borderColor: "rgb(140, 65, 245)",
+            boxShadow:
+              user?.spins > 0
+                ? "none"
+                : "rgba(111, 17, 242, 0.35) 0px 14px 18px 0px",
+            cursor: user?.spins > 0 ? "not-allowed" : "pointer",
+          }}
           _active={user?.spins > 0 ? "none" : undefined}
           fontSize="1.2rem"
           size={{ base: "md", md: "md", lg: "lg" }}

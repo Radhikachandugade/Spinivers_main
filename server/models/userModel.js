@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     freeSpins: {
       type: Number,
       required: true,
-      default: 1,
+      default: 0, // Set default to 0 for cooldown calculation
     },
     paidSpins: {
       type: Number,
@@ -26,12 +26,16 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
     cooldown: {
-      type: Number,
+      type: Number, // The next available spin time (timestamp)
       default: 0,
     },
     playedSpins: {
       type: Number,
       default: 0,
+    },
+    nextSpinTime: {
+      type: Date, // The time when the user can spin next
+      default: Date.now,
     },
   },
   { timestamps: true }
@@ -40,6 +44,13 @@ const userSchema = new mongoose.Schema(
 // Pre-save middleware to update the spins field
 userSchema.pre("save", function (next) {
   this.spins = this.freeSpins + this.paidSpins;
+
+  if (this.freeSpins > 0) {
+    this.nextSpinTime = new Date(Date.now() + 60 * 60 * 1000); // 1 hour for free spins
+  } else {
+    this.nextSpinTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours for no spins
+  }
+
   next();
 });
 
