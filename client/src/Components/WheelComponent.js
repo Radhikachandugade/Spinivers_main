@@ -82,7 +82,7 @@ const WheelComponent = () => {
     { option: "Hardware Wallet" },
     { option: "CG Tokens Airdrop" },
     { option: "WHISK Airdrop" },
-    { option: "Maestro Bot Subscription " },
+    { option: " Maestro Bot Subscription" },
   ];
 
   useEffect(() => {
@@ -99,69 +99,84 @@ const WheelComponent = () => {
     const radius = canvasSize / 2;
     const segmentAngle = (2 * Math.PI) / numSegments;
     const borderWidth = 10;
+    const maxScale = 2; // Maximum scale for the transform
+    let currentCircle = 0;
+    let timer = 0; // Initialize timer variable
+    const interval = 100;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.shadowBlur = 15;
     ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+    ctx.shadowOffsetX = 0; // Move shadow inward on the X-axis
+    ctx.shadowOffsetY = 0;
 
     // Draw the wheel segments
-    data.forEach((segment, index) => {
-      const startAngle = segmentAngle * index;
-      const endAngle = segmentAngle * (index + 1);
-      const gradientColors =
-        index % 2 === 0 ? evenGradientColors : oddGradientColors;
+    const drawWheelSegments = () => {
+      data.forEach((segment, index) => {
+        const startAngle = segmentAngle * index;
+        const endAngle = segmentAngle * (index + 1);
+        const gradientColors =
+          index % 2 === 0 ? evenGradientColors : oddGradientColors;
 
-      const gradient = ctx.createRadialGradient(
-        radius,
-        radius,
-        radius * 0.2,
-        radius,
-        radius,
-        radius
-      );
-      gradient.addColorStop(0, gradientColors[0]);
-      gradient.addColorStop(1, gradientColors[1]);
+        const gradient = ctx.createRadialGradient(
+          radius,
+          radius,
+          radius * 0.2,
+          radius,
+          radius,
+          radius
+        );
+        gradient.addColorStop(0, gradientColors[0]);
+        gradient.addColorStop(1, gradientColors[1]);
 
-      ctx.beginPath();
-      ctx.arc(radius, radius, radius, startAngle, endAngle);
-      ctx.arc(radius, radius, radius * 0.2, endAngle, startAngle, true);
-      ctx.closePath();
-      ctx.fillStyle = gradient;
-      ctx.fill();
+        ctx.beginPath();
+        ctx.arc(radius, radius, radius, startAngle, endAngle);
+        ctx.arc(radius, radius, radius * 0.2, endAngle, startAngle, true);
+        ctx.closePath();
+        ctx.fillStyle = gradient;
+        ctx.fill();
 
-      ctx.save();
-      ctx.translate(radius, radius);
-      ctx.rotate(startAngle + segmentAngle / 2);
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 14px Arial";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(segment.option, radius * 0.55, 0);
-      ctx.restore();
-    });
+        ctx.save();
+        ctx.translate(radius, radius);
+        ctx.rotate(startAngle + segmentAngle / 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 14px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(segment.option, radius * 0.55, 0);
+        ctx.restore();
+      });
+    };
 
     // Draw the segment lines
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 4;
-    data.forEach((_, index) => {
-      const angle = segmentAngle * index;
-      const innerX = radius * 0.2 * Math.cos(angle);
-      const innerY = radius * 0.2 * Math.sin(angle);
-      const outerX = radius * Math.cos(angle);
-      const outerY = radius * Math.sin(angle);
+    const drawSegmentLines = () => {
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 4;
+      data.forEach((_, index) => {
+        const angle = segmentAngle * index;
+        const innerX = radius * 0.2 * Math.cos(angle);
+        const innerY = radius * 0.2 * Math.sin(angle);
+        const outerX = radius * Math.cos(angle);
+        const outerY = radius * Math.sin(angle);
 
-      ctx.beginPath();
-      ctx.moveTo(radius + innerX, radius + innerY);
-      ctx.lineTo(radius + outerX, radius + outerY);
-      ctx.stroke();
-    });
+        ctx.beginPath();
+        ctx.moveTo(radius + innerX, radius + innerY);
+        ctx.lineTo(radius + outerX, radius + outerY);
+        ctx.stroke();
+      });
+    };
 
-    // Function to draw the border and circles
+    // Draw the wheel once
+    drawWheelSegments();
+    drawSegmentLines();
+
+    // Function to draw the border with gradient and shadow
     const drawBorder = (size, gradientColors, width, isInner = false) => {
       ctx.beginPath();
-      ctx.arc(radius, radius, size, 0, 2 * Math.PI);
+      ctx.arc(radius, radius, size, 0, 2 * Math.PI); // Draw the outer circle
       ctx.lineWidth = width;
 
+      // Create a linear gradient for the border
       const borderGradient = ctx.createLinearGradient(0, radius, 500, radius);
       gradientColors.forEach(([stop, color]) =>
         borderGradient.addColorStop(stop, color)
@@ -170,6 +185,7 @@ const WheelComponent = () => {
       ctx.strokeStyle = borderGradient;
       ctx.stroke();
 
+      // Draw the shadow for the border
       ctx.save();
       ctx.beginPath();
       ctx.arc(radius, radius, size, 0, 2 * Math.PI);
@@ -189,35 +205,15 @@ const WheelComponent = () => {
       ctx.strokeStyle = shadowGradient;
       ctx.stroke();
       ctx.restore();
-
-      const numCircles = isInner ? 8 : 30; // Adjust number of circles for inner radius
-      const circleRadius = isInner ? 4 : 5; // Radius of the white circles
-
-      for (let i = 0; i < numCircles; i++) {
-        const angle = ((2 * Math.PI) / numCircles) * i;
-        const circleOffset = isInner ? radius * 0.19 : radius - borderWidth;
-        const x = radius + circleOffset * Math.cos(angle);
-        const y = radius + circleOffset * Math.sin(angle);
-
-        ctx.shadowColor = "white";
-        ctx.shadowBlur = 5; // Blur radius for the shadow
-        ctx.shadowOffsetX = 0; // No horizontal offset
-        ctx.shadowOffsetY = 2;
-        ctx.beginPath();
-        ctx.arc(x, y, circleRadius, 0, 2 * Math.PI);
-        ctx.fillStyle = "white";
-        ctx.fill();
-      }
     };
 
-    // Draw the outer border and circles
+    // Draw the outer border
     drawBorder(
       radius - 10,
       [
         [0, "#fdf698"],
         [0.05, "#b78a36"],
         [0.1, "#b78a36"],
-        // [0.15, "#f3dd72"],
         [0.2, "#f3dd72"],
         [0.3, "#b78a36"],
         [0.35, "#f3dd72"],
@@ -230,30 +226,114 @@ const WheelComponent = () => {
         [1, "#f3dd72"],
       ],
       20,
-      false // Outer radius circles
+      false
     );
 
-    // Draw the inner border and circles
+    // Draw the inner border
     drawBorder(
       radius * 0.2 - 4,
       [
         [0, "#ffd372"],
         [0.05, "#b87407"],
-        // [0.1, "#ffd372"],
-        // [0.15, "#b87407"],
-        // [0.2, "#ffd372"],
-        // [0.3, "#b87407"],
         [0.4, "#ffd372"],
         [0.5, "#b87407"],
-        // [0.6, "#ffd372"],
-        // [0.65, "#b87407"],
         [0.75, "#ffd372"],
         [0.85, "#b87407"],
         [1, "#ffd372"],
       ],
       13,
-      true // Inner radius circles
+      true
     );
+
+    // Function to draw circles around the border
+    const drawCircles = (isInner = false) => {
+      const numCircles = isInner ? 8 : 30;
+      const circleRadius = isInner ? 4 : 5;
+
+      for (let i = 0; i < numCircles; i++) {
+        const angle = ((2 * Math.PI) / numCircles) * i;
+        const circleOffset = isInner ? radius * 0.19 : radius - borderWidth;
+        const x = radius + circleOffset * Math.cos(angle);
+        const y = radius + circleOffset * Math.sin(angle);
+
+        // Apply shadow only to the circles
+        ctx.save(); // Save the current context state
+        ctx.shadowColor = "white"; // Set the shadow color to black
+        ctx.shadowBlur = 5;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2;
+
+        ctx.beginPath();
+
+        if (i === currentCircle) {
+          ctx.arc(x, y, circleRadius * maxScale, 0, 2 * Math.PI);
+          ctx.fillStyle = "white";
+        } else {
+          ctx.arc(x, y, circleRadius, 0, 2 * Math.PI);
+          ctx.fillStyle = "white";
+        }
+
+        ctx.fill();
+        ctx.restore(); // Restore the context state, resetting the shadow
+      }
+    };
+
+    const updateCircles = (timestamp) => {
+      if (timestamp - timer >= interval) {
+        timer = timestamp; // Update the timer
+
+        // Clear the canvas and redraw everything
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawWheelSegments();
+        drawSegmentLines();
+        drawBorder(
+          radius - 10,
+          [
+            [0, "#fdf698"],
+            [0.05, "#b78a36"],
+            [0.1, "#b78a36"],
+            [0.2, "#f3dd72"],
+            [0.3, "#b78a36"],
+            [0.35, "#f3dd72"],
+            [0.4, "#a46f23"],
+            [0.5, "#fdf698"],
+            [0.6, "#d4b051"],
+            [0.7, "#f3dd72"],
+            [0.8, "#b78a36"],
+            [0.9, "#a46f23"],
+            [1, "#f3dd72"],
+          ],
+          20,
+          false
+        );
+        drawBorder(
+          radius * 0.2 - 4,
+          [
+            [0, "#ffd372"],
+            [0.05, "#b87407"],
+            [0.4, "#ffd372"],
+            [0.5, "#b87407"],
+            [0.75, "#ffd372"],
+            [0.85, "#b87407"],
+            [1, "#ffd372"],
+          ],
+          13,
+          true
+        );
+        drawCircles(true);
+        drawCircles(false);
+
+        // Increment current circle and wrap around
+        currentCircle = (currentCircle + 1) % 30;
+      }
+
+      // Call updateCircles on the next frame
+      requestAnimationFrame(updateCircles);
+    };
+
+    // Start the animation loop
+    updateCircles();
+
     const drawWinningSegment = (ctx, winningSegmentIndex) => {
       const numSegments = data.length;
       const segmentAngle = (2 * Math.PI) / numSegments;
@@ -492,7 +572,7 @@ const WheelComponent = () => {
           fontWeight="bold"
           fontSize="2xl"
           _disabled={{ opacity: 0.9, bg: "#fed97e" }}
-          isDisabled={!isConnected || user?.spins === 0}
+          // isDisabled={!isConnected || user?.spins === 0}
         >
           SPIN
         </Button>
@@ -553,18 +633,6 @@ const WheelComponent = () => {
             borderRadius="full"
             bg="linear-gradient( to left, hsl(340, 100%, 16%) 0%, hsl(340, 100%, 32%) 8%, hsl(340, 100%, 32%) 92%, hsl(340, 100%, 16%) 100% )"
           />
-          {/* <IconButton
-            colorScheme="blue"
-            aria-label="Search database"
-            onClick={spinWheel}
-            borderRadius="full"
-            icon={<ImSpinner4 />}
-            style={{
-              top: "39.3%",
-              left: "49.9%",
-              transform: "translate(-50%, -50%)",
-            }}
-          /> */}
         </Box>
       </Box>
 
