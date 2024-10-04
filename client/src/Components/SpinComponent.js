@@ -26,7 +26,7 @@ const SpinComponent = () => {
 
   // Handle cooldown countdown
   useEffect(() => {
-    if (!nextSpin) return;
+    if (!nextSpin) return; // Don't run timer if no nextSpinTime is set
 
     const interval = setInterval(() => {
       const now = new Date().getTime();
@@ -154,7 +154,7 @@ const SpinComponent = () => {
       </Box>
 
       {/* Countdown Timer */}
-      {nextSpin && remainingTime && (
+      {nextSpin !== null && remainingTime && user?.spins === 0 && (
         <div id="countdown" style={{ textAlign: "center", marginTop: "2px" }}>
           <ul
             style={{
@@ -164,27 +164,12 @@ const SpinComponent = () => {
               color: "white",
             }}
           >
-            {/* <li
-              style={{
-                display: "inline-block",
-                fontSize: "1.5em",
-                listStyleType: "none",
-                padding: "1em",
-                textTransform: "uppercase",
-              }}
-            >
-              <span style={{ display: "block", fontSize: "4.5rem" }}>
-                {timeComponents.days}
-              </span>{" "}
-              days
-            </li> */}
             <li
               style={{
                 display: "inline-block",
                 fontSize: "0.4em",
                 listStyleType: "none",
                 padding: "1em",
-                // textTransform: "uppercase",
               }}
             >
               <span style={{ display: "block", fontSize: "3rem" }}>
@@ -198,7 +183,6 @@ const SpinComponent = () => {
                 fontSize: "0.4em",
                 listStyleType: "none",
                 padding: "1em",
-                // textTransform: "uppercase",
               }}
             >
               <span style={{ display: "block", fontSize: "3rem" }}>
