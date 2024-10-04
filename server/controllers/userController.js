@@ -81,6 +81,7 @@ const getUser = asyncHandler(async (req, res) => {
       paidSpins: user.paidSpins,
       spins: user.spins,
       playedSpins: user.playedSpins,
+      nextSpinTime: user.nextSpinTime,
     });
   } else {
     res.status(404);

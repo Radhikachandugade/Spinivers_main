@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { updateSpins } from "../actions/userActions"; // Import the action
 import { Box, Button, Tooltip } from "@chakra-ui/react";
 import { IoInformationCircleOutline } from "react-icons/io5";
 
 const SpinComponent = () => {
-  // const [isSpinDisabled, setSpinDisabled] = useState(true);
+  const dispatch = useDispatch();
   const [isConnected, setIsConnected] = useState(true);
 
   const userLogin = useSelector((state) => state.userLogin || {});
@@ -12,6 +13,57 @@ const SpinComponent = () => {
 
   const userDetails = useSelector((state) => state.userDetails || {});
   const { user } = userDetails;
+
+  const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
+  const [remainingTime, setRemainingTime] = useState(null);
+
+  // Update nextSpin if user.nextSpinTime changes
+  useEffect(() => {
+    if (user?.nextSpinTime) {
+      setNextSpin(user.nextSpinTime);
+    }
+  }, [user?.nextSpinTime]);
+
+  // Handle cooldown countdown
+  useEffect(() => {
+    if (!nextSpin) return;
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const nextTime = new Date(nextSpin).getTime();
+      const timeDifference = nextTime - now;
+
+      if (timeDifference <= 0) {
+        clearInterval(interval);
+        setNextSpin(null);
+        setRemainingTime(null);
+        dispatch(updateSpins(user?.walletAddress));
+      } else {
+        setRemainingTime(timeDifference);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [nextSpin, dispatch, user?.walletAddress]);
+
+  const formatTimeComponents = (time) => {
+    const hours = String(
+      Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    ).padStart(2, "0");
+    const minutes = String(
+      Math.floor((time % (1000 * 60 * 60)) / (1000 * 60))
+    ).padStart(2, "0");
+    const seconds = String(Math.floor((time % (1000 * 60)) / 1000)).padStart(
+      2,
+      "0"
+    );
+
+    return { hours, minutes, seconds };
+  };
+
+  const timeComponents = remainingTime
+    ? formatTimeComponents(remainingTime)
+    : { hours: 0, minutes: 0, seconds: 0 };
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={5}>
@@ -24,17 +76,25 @@ const SpinComponent = () => {
           backgroundColor="rgb(59, 9, 128)"
           borderRadius="16px"
           boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-          opacity={user?.spins > 0 ? 1 : 0.6} // Disable button if spins are 0
-          _hover={user?.spins > 0 ? undefined : "none"}
+          opacity={user?.spins > 0 ? 1 : 0.6}
+          _hover={{
+            bgColor: user?.spins > 0 ? "none" : "rgb(59, 9, 128)",
+            borderColor: "rgb(140, 65, 245)",
+            boxShadow:
+              user?.spins > 0
+                ? "none"
+                : "rgba(111, 17, 242, 0.35) 0px 14px 18px 0px",
+            cursor: user?.spins > 0 ? "not-allowed" : "pointer",
+          }}
           _active={user?.spins > 0 ? undefined : "none"}
           fontSize="1.2rem"
           size={{ base: "md", md: "md", lg: "lg" }}
-          disabled={user?.spins === 0}
+          disabled={user?.spins === 0 || nextSpin}
         >
           {!isConnected
             ? "Daily Free Spins"
             : user?.spins > 0
-            ? `Daily Free Spin${user.spins > 1 ? "s" : ""} : ${user.spins} `
+            ? `Daily Free Spin${user.spins > 1 ? "s" : ""} : ${user.spins}`
             : "Daily Free Spins : 0"}
           <Tooltip
             label="Know more about Free Spin"
@@ -52,7 +112,7 @@ const SpinComponent = () => {
           </Tooltip>
         </Button>
 
-        {/* Paid Spin Button */}
+        {/* Bonus Spin Button */}
         <Button
           variant="solid"
           color="rgb(242, 240, 245)"
@@ -60,7 +120,7 @@ const SpinComponent = () => {
           backgroundColor="rgb(59, 9, 128)"
           borderRadius="16px"
           boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-          opacity={user?.spins > 0 ? 0.6 : 1} // Disable paid spins if free spins left
+          opacity={user?.spins > 0 ? 0.6 : 1}
           _hover={{
             bgColor: user?.spins > 0 ? "none" : "rgb(59, 9, 128)",
             borderColor: "rgb(140, 65, 245)",
@@ -73,9 +133,9 @@ const SpinComponent = () => {
           _active={user?.spins > 0 ? "none" : undefined}
           fontSize="1.2rem"
           size={{ base: "md", md: "md", lg: "lg" }}
-          disabled={user?.spins > 0} // Disable if free spins are available
+          disabled={user?.spins > 0}
         >
-          Bonus Spins : 0
+          Bonus Spin: 0
           <Tooltip
             label="Know more about Bonus Spin"
             hasArrow
@@ -92,6 +152,77 @@ const SpinComponent = () => {
           </Tooltip>
         </Button>
       </Box>
+
+      {/* Countdown Timer */}
+      {nextSpin && remainingTime && (
+        <div id="countdown" style={{ textAlign: "center", marginTop: "2px" }}>
+          <ul
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              padding: 0,
+              color: "white",
+            }}
+          >
+            {/* <li
+              style={{
+                display: "inline-block",
+                fontSize: "1.5em",
+                listStyleType: "none",
+                padding: "1em",
+                textTransform: "uppercase",
+              }}
+            >
+              <span style={{ display: "block", fontSize: "4.5rem" }}>
+                {timeComponents.days}
+              </span>{" "}
+              days
+            </li> */}
+            <li
+              style={{
+                display: "inline-block",
+                fontSize: "0.4em",
+                listStyleType: "none",
+                padding: "1em",
+                // textTransform: "uppercase",
+              }}
+            >
+              <span style={{ display: "block", fontSize: "3rem" }}>
+                {timeComponents.hours}
+              </span>{" "}
+              H R S
+            </li>
+            <li
+              style={{
+                display: "inline-block",
+                fontSize: "0.4em",
+                listStyleType: "none",
+                padding: "1em",
+                // textTransform: "uppercase",
+              }}
+            >
+              <span style={{ display: "block", fontSize: "3rem" }}>
+                {timeComponents.minutes}
+              </span>{" "}
+              M I N
+            </li>
+            <li
+              style={{
+                display: "inline-block",
+                fontSize: "0.4em",
+                listStyleType: "none",
+                padding: "1em",
+                textTransform: "uppercase",
+              }}
+            >
+              <span style={{ display: "block", fontSize: "3rem" }}>
+                {timeComponents.seconds}
+              </span>{" "}
+              S E C
+            </li>
+          </ul>
+        </div>
+      )}
     </Box>
   );
 };

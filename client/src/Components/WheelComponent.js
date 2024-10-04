@@ -52,21 +52,27 @@ const WheelComponent = () => {
 
   const userDetails = useSelector((state) => state.userDetails || {});
   const { user } = userDetails;
+  const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
+  console.log(nextSpin);
 
-  const useSpinDisabled = (isConnected) => {
+  const useSpinDisabled = (isConnected, nextSpin) => {
     const userDetails = useSelector((state) => state.userDetails || {});
     const { user } = userDetails;
 
     const [isDisabled, setIsDisabled] = useState(
-      !isConnected || user?.spins <= 0
+      !isConnected || user?.spins <= 0 || nextSpin !== "00:00:00"
     );
 
     useEffect(() => {
-      setIsDisabled(!isConnected || user?.spins <= 0);
-    }, [isConnected, user]);
+      setIsDisabled(
+        !isConnected || user?.spins <= 0 || nextSpin !== "00:00:00"
+      );
+    }, [isConnected, user, nextSpin]);
 
     return isDisabled;
   };
+  const isDisabled = useSpinDisabled(isConnected);
+  console.log(isDisabled, "yes");
   // const isSpinDisabled = useSpinDisabled(isConnected, user);
 
   const oddGradientColors = ["#ff8a00", "#ff8a00"];
@@ -572,7 +578,10 @@ const WheelComponent = () => {
           fontWeight="bold"
           fontSize="2xl"
           _disabled={{ opacity: 0.9, bg: "#fed97e" }}
-          // isDisabled={!isConnected || user?.spins === 0}
+          // disabled={isDisabled}
+          isDisabled={
+            !isConnected || user?.spins === 0 || nextSpin !== "00:00:00"
+          }
         >
           SPIN
         </Button>

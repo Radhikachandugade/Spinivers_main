@@ -281,7 +281,7 @@ const Wheel = () => {
             flexDirection="column"
             alignItems="center"
             p={10}
-            gap={20} // Adjust spacing as needed
+            gap={7} // Adjust spacing as needed
           >
             <Box display="flex" flexDirection="row" alignItems="center" gap={3}>
               <SpinComponent />
