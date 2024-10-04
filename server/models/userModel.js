@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
     },
     nextSpinTime: {
       type: Date, // The time when the user can spin next
-      default: Date.now,
+      default: 0,
     },
   },
   { timestamps: true }
