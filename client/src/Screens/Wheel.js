@@ -284,7 +284,10 @@ const Wheel = () => {
             gap={7} // Adjust spacing as needed
           >
             <Box display="flex" flexDirection="row" alignItems="center" gap={3}>
-              <SpinComponent />
+              <SpinComponent
+                walletAddress={walletAddress}
+                isConnected={isConnected}
+              />
             </Box>
             <Box
               position="relative"

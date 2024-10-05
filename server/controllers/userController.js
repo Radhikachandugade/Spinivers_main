@@ -19,6 +19,7 @@ const authUser = asyncHandler(async (req, res) => {
       paidSpins: user.paidSpins,
       spins: user.spins,
       playedSpins: user.playedSpins,
+      nextSpinTime: user.nextSpinTime,
     });
   } else {
     res.status(401);
@@ -124,6 +125,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       paidSpins: updatedUser.paidSpins,
       spins: updatedUser.spins,
       playedSpins: updatedUser.playedSpins,
+      nextSpinTime: updatedUser.nextSpinTime,
     });
   } else {
     res.status(404).json({ message: "User not found" });
