@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     freeSpins: {
       type: Number,
       required: true,
-      default: 0, // Set default to 0 for cooldown calculation
+      default: 1, // Set default to 0 for cooldown calculation
     },
     paidSpins: {
       type: Number,
@@ -48,7 +48,8 @@ userSchema.pre("save", function (next) {
   if (this.freeSpins > 0) {
     this.nextSpinTime = new Date(Date.now() + 60 * 60 * 1000); // 1 hour for free spins
   } else {
-    this.nextSpinTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours for no spins
+    // this.nextSpinTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours for no spins
+    this.nextSpinTime = new Date(Date.now() + 1 * 60 * 1000); // 1 minute
   }
 
   next();

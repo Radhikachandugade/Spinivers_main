@@ -59,16 +59,16 @@ const WheelComponent = () => {
   const evenGradientColors = ["#ffc501", "#ffc501"];
 
   const data = [
-    { option: "Amazon Gift Card" },
-    { option: "HTH Airdrop" },
-    { option: "SLAPHERO Airdrop" },
-    { option: "Better Luck Next Time" },
-    { option: "Exclusive NFTs" },
-    { option: "Solana Airdrops" },
-    { option: "Hardware Wallet" },
-    { option: "CG Tokens Airdrop" },
-    { option: "WHISK Airdrop" },
-    { option: " Maestro Bot Subscription" },
+    { option: "AMAZON GIFT CARD" },
+    { option: "SLAPHERO AIRDROP" },
+    { option: "TRY AGAIN" },
+    { option: "HTH AIRDROP" },
+    { option: "EXCLUSIVE NFTs" },
+    { option: "SOLANA AIRDROPS" },
+    { option: "HARDWARE WALLET" },
+    { option: "CG AIRDROP" },
+    { option: "WHISK AIRDROP" },
+    { option: "MAESTRO BOT" },
   ];
 
   useEffect(() => {
@@ -126,9 +126,22 @@ const WheelComponent = () => {
         ctx.translate(radius, radius);
         ctx.rotate(startAngle + segmentAngle / 2);
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 14px Arial";
+        ctx.font = "bold 14px Chakra Petch";
         ctx.textAlign = "center";
+        ctx.letterSpacing = "0.1rem";
         ctx.textBaseline = "middle";
+
+        // Add a black text shadow
+        ctx.shadowColor = "rgba(0, 0, 0, 0.3)"; // Slight black shadow
+        ctx.shadowBlur = 2;
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
+
+        // Add a text stroke for contrast
+        ctx.strokeStyle = "#000000"; // Black stroke
+        ctx.lineWidth = 1.5;
+        ctx.strokeText(segment.option, radius * 0.55, 0);
+
         ctx.fillText(segment.option, radius * 0.55, 0);
         ctx.restore();
       });
@@ -137,7 +150,7 @@ const WheelComponent = () => {
     // Draw the segment lines
     const drawSegmentLines = () => {
       ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 2;
       data.forEach((_, index) => {
         const angle = segmentAngle * index;
         const innerX = radius * 0.2 * Math.cos(angle);
@@ -233,7 +246,7 @@ const WheelComponent = () => {
 
     // Function to draw circles around the border
     const drawCircles = (isInner = false) => {
-      const numCircles = isInner ? 8 : 30;
+      const numCircles = isInner ? 8 : 20;
       const circleRadius = isInner ? 4 : 5;
 
       for (let i = 0; i < numCircles; i++) {
@@ -245,18 +258,35 @@ const WheelComponent = () => {
         // Apply shadow only to the circles
         ctx.save(); // Save the current context state
         ctx.shadowColor = "white"; // Set the shadow color to black
-        ctx.shadowBlur = 5;
+        ctx.shadowBlur = 15;
         ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 2;
+        ctx.shadowOffsetY = 0;
 
         ctx.beginPath();
 
         if (i === currentCircle) {
-          ctx.arc(x, y, circleRadius * maxScale, 0, 2 * Math.PI);
+          // Set shadow properties for scaling
+          ctx.shadowBlur = 15; // Scale the shadow size
+          ctx.shadowOffsetX = 0; // Optional: offset shadow horizontally
+          ctx.shadowOffsetY = 0; // Optional: offset shadow vertically
+          ctx.shadowColor = "rgba(225, 225, 225, 1)"; // Set shadow color with some transparency
+
+          // Draw the expanded circle
+          let expandedRadius = circleRadius * 1.5; // Increase the circle size by 20%
+          ctx.arc(x, y, expandedRadius, 0, 2 * Math.PI);
           ctx.fillStyle = "white";
+          ctx.fill();
+
+          // Reset shadow properties after drawing the current circle
+          ctx.shadowBlur = 0;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+          ctx.shadowColor = "transparent";
         } else {
+          // Draw normal circles
           ctx.arc(x, y, circleRadius, 0, 2 * Math.PI);
           ctx.fillStyle = "white";
+          ctx.fill();
         }
 
         ctx.fill();
@@ -544,7 +574,7 @@ const WheelComponent = () => {
           width="80px"
           variant="outline"
           border="4px solid white"
-          boxShadow="rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px"
+          boxShadow=" rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;"
           icon={<ImSpinner4 size="50" />}
           style={{
             size: "50",

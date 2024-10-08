@@ -14,16 +14,20 @@ const SpinComponent = ({ isConnected }) => {
   const { user } = userDetails;
 
   const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
+  const [freeSpins, setFreeSpins] = useState(0);
   const [remainingTime, setRemainingTime] = useState(null);
+  const [walletAddress, setWalletAddress] = useState("");
 
-  useEffect(() => {
-    if (user?.nextSpinTime) {
-      setNextSpin(user.nextSpinTime);
-    }
-  }, [user?.nextSpinTime]);
+  // useEffect(() => {
+  //   if (user?.nextSpinTime) {
+  //     setNextSpin(user.nextSpinTime);
+  //   }
+  // }, [user?.nextSpinTime]);
 
   // Handle cooldown countdown
   useEffect(() => {
+    const savedWalletAddress = localStorage.getItem("walletAddress");
+    setWalletAddress(savedWalletAddress);
     if (!nextSpin || !isConnected) return; // Only run timer if connected and nextSpinTime is set
 
     const interval = setInterval(() => {
@@ -35,14 +39,16 @@ const SpinComponent = ({ isConnected }) => {
         clearInterval(interval);
         setNextSpin(null);
         setRemainingTime(null);
-        dispatch(updateSpins(user?.walletAddress));
+        dispatch(updateSpins(walletAddress));
       } else {
         setRemainingTime(timeDifference);
       }
     }, 1000);
-
+    if (user?.nextSpinTime) {
+      setNextSpin(user.nextSpinTime);
+    }
     return () => clearInterval(interval);
-  }, [nextSpin, dispatch, user?.walletAddress, isConnected]);
+  }, [nextSpin, dispatch, walletAddress, isConnected, user?.nextSpinTime]);
 
   const formatTimeComponents = (time) => {
     const hours = String(
@@ -87,7 +93,7 @@ const SpinComponent = ({ isConnected }) => {
           _active={user?.spins > 0 ? undefined : "none"}
           fontSize="1.2rem"
           size={{ base: "md", md: "md", lg: "lg" }}
-          disabled={user?.spins === 0 || nextSpin || !isConnected} // Disable if not connected
+          disabled={user?.spins === 0 || nextSpin === null || !isConnected} // Disable if not connected
         >
           {!isConnected
             ? "Please Connect Wallet"
@@ -133,7 +139,7 @@ const SpinComponent = ({ isConnected }) => {
           size={{ base: "md", md: "md", lg: "lg" }}
           disabled={user?.spins > 0 || !isConnected} // Disable if not connected
         >
-          Bonus Spin: 0
+          {!isConnected ? "Please Connect Wallet" : "Bonus Spin : 0"}
           <Tooltip
             label="Know more about Bonus Spin"
             hasArrow

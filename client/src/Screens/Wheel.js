@@ -72,6 +72,11 @@ const Wheel = () => {
   const rewardStatsToday = useSelector((state) => state.rewardStatsToday);
   const { loading, error, stats } = rewardStatsToday;
 
+  const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
+  console.log(nextSpin);
+
+  const [freeSpins, setFreeSpins] = useState(0);
+
   useEffect(() => {
     dispatch(getTodayRewardStats());
   }, [dispatch]);
@@ -125,6 +130,7 @@ const Wheel = () => {
       const hasEnoughTokens = tokenBalance >= 10000;
 
       const freeSpins = hasEnoughTokens ? 4 : 1;
+      setFreeSpins(freeSpins);
       await dispatch(register(walletAddress, freeSpins));
       await dispatch(getUserDetails(walletAddress));
       // await dispatch(createOrUpdateReward(rewardData, walletAddress));
@@ -146,8 +152,15 @@ const Wheel = () => {
         }
       }
     };
+    if (user?.nextSpinTime === null) {
+      const savedWalletAddress = localStorage.getItem("walletAddress");
+      if (savedWalletAddress) {
+        handleWalletConnect(savedWalletAddress);
+        // setFreeSpins(handleWalletConnect());
+      }
+    }
     checkPhantomInstallation();
-  }, [handleWalletConnect]);
+  }, [user?.nextSpinTime, handleWalletConnect]);
 
   useEffect(() => {
     setSpinDisabled(!isConnected || user?.spins <= 0);

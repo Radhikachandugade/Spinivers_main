@@ -127,7 +127,7 @@ export const updateUserProfile = (walletAddress, name) => async (dispatch) => {
   }
 };
 
-export const listUsers = () => async (dispatch, getState) => {
+export const listUsers = () => async (dispatch) => {
   try {
     dispatch({ type: USER_LIST_REQUEST });
 
