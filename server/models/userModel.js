@@ -43,14 +43,19 @@ const userSchema = new mongoose.Schema(
 
 // Pre-save middleware to update the spins field
 userSchema.pre("save", function (next) {
-  this.spins = this.freeSpins + this.paidSpins;
-
+  // Calculate next spin time based on remaining spins
   if (this.freeSpins > 0) {
-    this.nextSpinTime = new Date(Date.now() + 60 * 60 * 1000); // 1 hour for free spins
-  } else {
-    // this.nextSpinTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours for no spins
+    // Set next spin time to 1 hour for remaining free spins
+    // this.nextSpinTime = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
     this.nextSpinTime = new Date(Date.now() + 1 * 60 * 1000); // 1 minute
+  } else {
+    // Set next spin time to 24 hours when no free spins are left
+    this.nextSpinTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    // this.nextSpinTime = new Date(Date.now() + 1 * 60 * 1000); // 1 minute
   }
+
+  // Ensure spins are correctly calculated before saving
+  this.spins = this.freeSpins + this.paidSpins;
 
   next();
 });

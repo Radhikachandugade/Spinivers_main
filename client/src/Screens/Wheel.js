@@ -80,7 +80,7 @@ const Wheel = () => {
   const { loading, error, stats } = rewardStatsToday;
 
   const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
-  console.log(nextSpin);
+  // console.log(nextSpin);
 
   const [freeSpins, setFreeSpins] = useState(0);
 

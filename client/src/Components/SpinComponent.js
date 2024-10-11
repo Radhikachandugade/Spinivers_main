@@ -5,7 +5,6 @@ import { Box, Button, Tooltip } from "@chakra-ui/react";
 import { IoInformationCircleOutline } from "react-icons/io5";
 
 const SpinComponent = ({ isConnected }) => {
-  // Accepting isConnected as a prop
   const dispatch = useDispatch();
   const userLogin = useSelector((state) => state.userLogin || {});
   const { userInfo } = userLogin;
@@ -14,15 +13,17 @@ const SpinComponent = ({ isConnected }) => {
   const { user } = userDetails;
 
   const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
-  const [freeSpins, setFreeSpins] = useState(0);
+  const [freeSpins, setFreeSpins] = useState(user?.spins || 0);
   const [remainingTime, setRemainingTime] = useState(null);
   const [walletAddress, setWalletAddress] = useState("");
 
-  // useEffect(() => {
-  //   if (user?.nextSpinTime) {
-  //     setNextSpin(user.nextSpinTime);
-  //   }
-  // }, [user?.nextSpinTime]);
+  // Update nextSpin when user details change
+  useEffect(() => {
+    if (user) {
+      setNextSpin(user.nextSpinTime);
+      setFreeSpins(user.spins);
+    }
+  }, [user]);
 
   // Handle cooldown countdown
   useEffect(() => {
@@ -39,16 +40,15 @@ const SpinComponent = ({ isConnected }) => {
         clearInterval(interval);
         setNextSpin(null);
         setRemainingTime(null);
-        dispatch(updateSpins(walletAddress));
+        // Uncomment if you want to dispatch updateSpins when the cooldown ends
+        // dispatch(updateSpins(walletAddress));
       } else {
         setRemainingTime(timeDifference);
       }
     }, 1000);
-    if (user?.nextSpinTime) {
-      setNextSpin(user.nextSpinTime);
-    }
+
     return () => clearInterval(interval);
-  }, [nextSpin, dispatch, walletAddress, isConnected, user?.nextSpinTime]);
+  }, [nextSpin, dispatch, walletAddress, isConnected]);
 
   const formatTimeComponents = (time) => {
     const hours = String(
@@ -80,25 +80,25 @@ const SpinComponent = ({ isConnected }) => {
           backgroundColor="rgb(59, 9, 128)"
           borderRadius="16px"
           boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-          opacity={user?.spins > 0 ? 1 : 0.6}
+          opacity={freeSpins > 0 ? 1 : 0.6}
           _hover={{
-            bgColor: user?.spins > 0 ? "none" : "rgb(59, 9, 128)",
+            bgColor: freeSpins > 0 ? "none" : "rgb(59, 9, 128)",
             borderColor: "rgb(140, 65, 245)",
             boxShadow:
-              user?.spins > 0
+              freeSpins > 0
                 ? "none"
                 : "rgba(111, 17, 242, 0.35) 0px 14px 18px 0px",
-            cursor: user?.spins > 0 ? "not-allowed" : "pointer",
+            cursor: freeSpins > 0 ? "not-allowed" : "pointer",
           }}
-          _active={user?.spins > 0 ? undefined : "none"}
+          _active={freeSpins > 0 ? undefined : "none"}
           fontSize="1.2rem"
           size={{ base: "md", md: "md", lg: "lg" }}
-          disabled={user?.spins === 0 || nextSpin === null || !isConnected} // Disable if not connected
+          disabled={freeSpins === 0 || nextSpin === null || !isConnected} // Disable if not connected
         >
           {!isConnected
             ? "Please Connect Wallet"
-            : user?.spins > 0
-            ? `Daily Free Spin${user.spins > 1 ? "s" : ""} : ${user.spins}`
+            : freeSpins > 0
+            ? `Daily Free Spin${freeSpins > 1 ? "s" : ""} : ${freeSpins}`
             : "Daily Free Spins : 0"}
           <Tooltip
             label="Know more about Free Spin"
@@ -158,62 +158,58 @@ const SpinComponent = ({ isConnected }) => {
       </Box>
 
       {/* Countdown Timer */}
-      {isConnected &&
-        nextSpin !== null &&
-        remainingTime &&
-        user?.spins === 0 && (
-          <div id="countdown" style={{ textAlign: "center", marginTop: "2px" }}>
-            <ul
+      {isConnected && nextSpin !== null && remainingTime && (
+        <div id="countdown" style={{ textAlign: "center", marginTop: "2px" }}>
+          <ul
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              padding: 0,
+              color: "white",
+            }}
+          >
+            <li
               style={{
-                display: "flex",
-                justifyContent: "center",
-                padding: 0,
-                color: "white",
+                display: "inline-block",
+                fontSize: "0.4em",
+                listStyleType: "none",
+                padding: "1em",
               }}
             >
-              <li
-                style={{
-                  display: "inline-block",
-                  fontSize: "0.4em",
-                  listStyleType: "none",
-                  padding: "1em",
-                }}
-              >
-                <span style={{ display: "block", fontSize: "3rem" }}>
-                  {timeComponents.hours}
-                </span>{" "}
-                H R S
-              </li>
-              <li
-                style={{
-                  display: "inline-block",
-                  fontSize: "0.4em",
-                  listStyleType: "none",
-                  padding: "1em",
-                }}
-              >
-                <span style={{ display: "block", fontSize: "3rem" }}>
-                  {timeComponents.minutes}
-                </span>{" "}
-                M I N
-              </li>
-              <li
-                style={{
-                  display: "inline-block",
-                  fontSize: "0.4em",
-                  listStyleType: "none",
-                  padding: "1em",
-                  textTransform: "uppercase",
-                }}
-              >
-                <span style={{ display: "block", fontSize: "3rem" }}>
-                  {timeComponents.seconds}
-                </span>{" "}
-                S E C
-              </li>
-            </ul>
-          </div>
-        )}
+              <span style={{ display: "block", fontSize: "3rem" }}>
+                {timeComponents.hours}
+              </span>{" "}
+              H R S
+            </li>
+            <li
+              style={{
+                display: "inline-block",
+                fontSize: "0.4em",
+                listStyleType: "none",
+                padding: "1em",
+              }}
+            >
+              <span style={{ display: "block", fontSize: "3rem" }}>
+                {timeComponents.minutes}
+              </span>{" "}
+              M I N
+            </li>
+            <li
+              style={{
+                display: "inline-block",
+                fontSize: "0.4em",
+                listStyleType: "none",
+                padding: "1em",
+              }}
+            >
+              <span style={{ display: "block", fontSize: "3rem" }}>
+                {timeComponents.seconds}
+              </span>{" "}
+              S E C
+            </li>
+          </ul>
+        </div>
+      )}
     </Box>
   );
 };
