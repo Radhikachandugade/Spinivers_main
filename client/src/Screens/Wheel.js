@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useTransition,
+} from "react";
 import {
   Box,
   Button,
@@ -49,6 +55,7 @@ const Wheel = () => {
   const wheelRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useDispatch();
+  const [isPending, startTransition] = useTransition();
 
   const data = [
     { option: "WHISK Airdrop" },
@@ -139,6 +146,7 @@ const Wheel = () => {
   );
 
   useEffect(() => {
+    setSpinDisabled(!isConnected || user?.spins <= 0);
     const checkPhantomInstallation = async () => {
       const isPhantomInstalled = window.solana && window.solana.isPhantom;
       if (!isPhantomInstalled) {
@@ -152,19 +160,23 @@ const Wheel = () => {
         }
       }
     };
-    if (user?.nextSpinTime === null) {
-      const savedWalletAddress = localStorage.getItem("walletAddress");
-      if (savedWalletAddress) {
-        handleWalletConnect(savedWalletAddress);
-        // setFreeSpins(handleWalletConnect());
-      }
-    }
+
     checkPhantomInstallation();
-  }, [user?.nextSpinTime, handleWalletConnect]);
+  }, [handleWalletConnect, isConnected, user, nextSpin]);
 
   useEffect(() => {
-    setSpinDisabled(!isConnected || user?.spins <= 0);
-  }, [isConnected, user]);
+    const init = async () => {
+      const savedWalletAddress = localStorage.getItem("walletAddress");
+      if (nextSpin === null && savedWalletAddress) {
+        console.log("Calling handleWalletConnect with:", savedWalletAddress);
+        await handleWalletConnect(savedWalletAddress);
+      }
+    };
+
+    if (nextSpin === null) {
+      init(); // Call init only when nextSpin is null
+    }
+  }, [nextSpin, handleWalletConnect]);
 
   const connectWallet = async () => {
     if (isConnected) {

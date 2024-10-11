@@ -53,7 +53,7 @@ const WheelComponent = () => {
   const userDetails = useSelector((state) => state.userDetails || {});
   const { user } = userDetails;
   const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
-  console.log(nextSpin);
+  // console.log(nextSpin);
 
   const oddGradientColors = ["#ff8a00", "#ff8a00"];
   const evenGradientColors = ["#ffc501", "#ffc501"];
