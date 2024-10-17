@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateSpins } from "../actions/userActions"; // Import the action
+import { updateSpins, resetFreeSpins } from "../actions/userActions"; // Import the action
 import { Box, Button, Tooltip } from "@chakra-ui/react";
 import { IoInformationCircleOutline } from "react-icons/io5";
 
 const SpinComponent = ({ isConnected }) => {
   const dispatch = useDispatch();
+  const currentTime = new Date();
   const userLogin = useSelector((state) => state.userLogin || {});
   const { userInfo } = userLogin;
 
@@ -13,15 +14,16 @@ const SpinComponent = ({ isConnected }) => {
   const { user } = userDetails;
 
   const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
-  const [freeSpins, setFreeSpins] = useState(user?.spins || 0);
-  const [remainingTime, setRemainingTime] = useState(null);
+  console.log(nextSpin);
+  const [freeSpins, setFreeSpins] = useState(user?.freeSpins || 0);
+  // const [remainingTime, setRemainingTime] = useState(null);
   const [walletAddress, setWalletAddress] = useState("");
 
   // Update nextSpin when user details change
   useEffect(() => {
     if (user) {
-      setNextSpin(user.nextSpinTime);
-      setFreeSpins(user.spins);
+      setNextSpin(user?.nextSpinTime);
+      setFreeSpins(user?.freeSpins);
     }
   }, [user]);
 
@@ -29,7 +31,7 @@ const SpinComponent = ({ isConnected }) => {
   useEffect(() => {
     const savedWalletAddress = localStorage.getItem("walletAddress");
     setWalletAddress(savedWalletAddress);
-    if (!nextSpin || !isConnected) return; // Only run timer if connected and nextSpinTime is set
+    if (!user?.nextSpinTime || !isConnected) return; // Only run timer if connected and nextSpinTime is set
 
     const interval = setInterval(() => {
       const now = new Date().getTime();
@@ -39,16 +41,14 @@ const SpinComponent = ({ isConnected }) => {
       if (timeDifference <= 0) {
         clearInterval(interval);
         setNextSpin(null);
-        setRemainingTime(null);
-        // Uncomment if you want to dispatch updateSpins when the cooldown ends
-        // dispatch(updateSpins(walletAddress));
+        // dispatch(resetFreeSpins(walletAddress, freeSpins));
       } else {
-        setRemainingTime(timeDifference);
+        setNextSpin(timeDifference);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [nextSpin, dispatch, walletAddress, isConnected]);
+  }, [user?.nextSpinTime, dispatch, walletAddress, isConnected]);
 
   const formatTimeComponents = (time) => {
     const hours = String(
@@ -65,9 +65,10 @@ const SpinComponent = ({ isConnected }) => {
     return { hours, minutes, seconds };
   };
 
-  const timeComponents = remainingTime
-    ? formatTimeComponents(remainingTime)
-    : { hours: 0, minutes: 0, seconds: 0 };
+  const timeComponents =
+    nextSpin > 0
+      ? formatTimeComponents(nextSpin)
+      : { hours: "00", minutes: "00", seconds: "00" };
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={5}>
@@ -93,7 +94,12 @@ const SpinComponent = ({ isConnected }) => {
           _active={freeSpins > 0 ? undefined : "none"}
           fontSize="1.2rem"
           size={{ base: "md", md: "md", lg: "lg" }}
-          disabled={freeSpins === 0 || nextSpin === null || !isConnected} // Disable if not connected
+          disabled={
+            freeSpins === 0 ||
+            !user.nextSpinTime ||
+            new Date(user.nextSpinTime) <= currentTime ||
+            !isConnected
+          } // Disable if not connected
         >
           {!isConnected
             ? "Please Connect Wallet"
@@ -158,7 +164,7 @@ const SpinComponent = ({ isConnected }) => {
       </Box>
 
       {/* Countdown Timer */}
-      {isConnected && nextSpin !== null && remainingTime && (
+      {isConnected && user?.nextSpinTime && nextSpin && (
         <div id="countdown" style={{ textAlign: "center", marginTop: "2px" }}>
           <ul
             style={{

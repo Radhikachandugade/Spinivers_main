@@ -35,6 +35,7 @@ import { ImSpinner4 } from "react-icons/im";
 
 const WheelComponent = () => {
   const [display, setDisplay] = useState("-");
+  const currentTime = new Date();
   // console.log(display);
   const [selectedPrize, setSelectedPrize] = useState(null);
   const wheelRef = useRef(null);
@@ -589,7 +590,12 @@ const WheelComponent = () => {
           fontSize="2xl"
           _disabled={{ opacity: 0.9, bg: "#fed97e" }}
           // disabled={isDisabled}
-          isDisabled={!isConnected || user?.spins === 0 || nextSpin !== null}
+          isDisabled={
+            !isConnected ||
+            !user?.nextSpinTime ||
+            new Date(user.nextSpinTime) <= currentTime ||
+            user?.spins === 0
+          }
         >
           SPIN
         </Button>

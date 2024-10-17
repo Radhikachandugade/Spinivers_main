@@ -138,18 +138,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
  * @access  Private
  */
 const updateSpins = asyncHandler(async (req, res) => {
-  const { walletAddress } = req.body;
+  const { walletAddress, freeSpins } = req.body;
 
   const user = await User.findOne({ walletAddress });
-
-  // Logic to handle spins and cooldown based on current spins
-  // user.freeSpins = Math.max(user.freeSpins - 1, 0); // Decrease free spins
-  // await user.save();
-
-  res.json({
-    spins: user.spins,
-    nextSpinTime: user.nextSpinTime,
-  });
 
   if (user) {
     if (user.spins > 0) {
@@ -160,9 +151,13 @@ const updateSpins = asyncHandler(async (req, res) => {
       }
       user.playedSpins += 1;
       await user.save();
+
+      // Respond after the user data is saved
       res.json({
+        freeSpins: user.freeSpins,
         spins: user.spins,
         playedSpins: user.playedSpins,
+        nextSpinTime: user.nextSpinTime,
       });
     } else {
       res.status(400);
@@ -174,6 +169,50 @@ const updateSpins = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @desc    Reset user's free spins based on frontend input if timer has expired or is null
+ * @route   PUT /api/users/reset-free-spins
+ * @access  Private
+ */
+const resetFreeSpins = asyncHandler(async (req, res) => {
+  const { walletAddress, freeSpins } = req.body;
+
+  // Find user by wallet address
+  const user = await User.findOne({ walletAddress });
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  const currentTime = new Date();
+
+  // Check if nextSpinTime is null or expired
+  if (!user.nextSpinTime || new Date(user.nextSpinTime) <= currentTime) {
+    // Reset free spins to the value passed from the frontend
+    user.freeSpins = freeSpins;
+
+    // Set a new nextSpinTime (e.g., 24 hours from now)
+    user.nextSpinTime = new Date(currentTime.getTime() + 24 * 60 * 60 * 1000); // 24 hours later
+
+    // Save updated user data
+    await user.save();
+
+    // Respond with the updated user data
+    res.json({
+      message: "Free spins reset successfully",
+      freeSpins: user.freeSpins,
+      nextSpinTime: user.nextSpinTime,
+    });
+  } else {
+    res.json({
+      message: "Free spins do not need resetting",
+      freeSpins: user.freeSpins,
+      nextSpinTime: user.nextSpinTime,
+    });
+  }
+});
+
 export {
   authUser,
   registerUser,
@@ -181,4 +220,5 @@ export {
   getAllUsers,
   updateUserProfile,
   updateSpins,
+  resetFreeSpins,
 };

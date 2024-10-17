@@ -19,6 +19,7 @@ import {
   USER_UPDATE_PROFILE_SUCCESS,
   USER_UPDATE_PROFILE_FAIL,
   USER_CONNECTION_STATUS,
+  RESET_FREE_SPINS_SUCCESS,
 } from "../constants/userConstants";
 
 // Login user
@@ -146,7 +147,7 @@ export const listUsers = () => async (dispatch) => {
 };
 
 // Update user's spins
-export const updateSpins = (walletAddress) => async (dispatch) => {
+export const updateSpins = (walletAddress, freeSpins) => async (dispatch) => {
   try {
     dispatch({ type: USER_UPDATE_SPINS_REQUEST });
 
@@ -156,9 +157,9 @@ export const updateSpins = (walletAddress) => async (dispatch) => {
       },
     };
 
-    const { data } = await axios.put(
+    const { data } = await axios.post(
       "/api/users/spins",
-      { walletAddress },
+      { walletAddress, freeSpins },
       config
     );
 
@@ -179,3 +180,22 @@ export const userConnectionStatus = (status) => (dispatch) => {
     payload: status,
   });
 };
+
+export const resetFreeSpins =
+  (walletAddress, freeSpins) => async (dispatch) => {
+    try {
+      const { data } = await axios.put("/api/users/resetFreeSpins", {
+        walletAddress,
+        freeSpins,
+      });
+      dispatch({ type: "RESET_FREE_SPINS_SUCCESS", payload: data });
+    } catch (error) {
+      dispatch({
+        type: "RESET_FREE_SPINS_FAIL",
+        payload:
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      });
+    }
+  };

@@ -63,7 +63,7 @@ export const getRewardsByWalletAddress =
   };
 
 // Action to fetch today's reward statistics
-export const getTodayRewardStats = () => async (dispatch, getState) => {
+export const getTodayRewardStats = () => async (dispatch) => {
   try {
     dispatch({ type: REWARD_STATS_TODAY_REQUEST });
 

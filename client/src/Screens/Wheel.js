@@ -32,16 +32,19 @@ import { useDispatch, useSelector } from "react-redux";
 import WheelComponent from "../Components/WheelComponent";
 import { Link as RouterLink } from "react-router-dom";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { login, register, getUserDetails } from "../actions/userActions";
-import axios from "axios";
+import {
+  login,
+  register,
+  getUserDetails,
+  updateSpins,
+  resetFreeSpins,
+} from "../actions/userActions";
 import SpinTracker from "../Components/SpinTracker";
 import { IoChevronDown } from "react-icons/io5";
 import { getTodayRewardStats } from "../actions/rewardActions";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import SpinComponent from "../Components/SpinComponent";
 import RewardSharing from "../Components/RewardSharing";
-
-// Use these components in your desired parent component
 
 const Wheel = () => {
   const [display, setDisplay] = useState("-");
@@ -77,16 +80,13 @@ const Wheel = () => {
   const { user } = userDetails;
 
   const rewardStatsToday = useSelector((state) => state.rewardStatsToday);
-  const { loading, error, stats } = rewardStatsToday;
+  const { stats } = rewardStatsToday;
 
-  const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
+  // const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
   // console.log(nextSpin);
 
-  const [freeSpins, setFreeSpins] = useState(0);
-
-  useEffect(() => {
-    dispatch(getTodayRewardStats());
-  }, [dispatch]);
+  const freeSpins = useSelector((state) => state.freeSpins);
+  const { resetfreeSpins = 0, nextSpinTime = null } = freeSpins || {};
 
   const alchemyApiKey = "3NfQ3MFPqhGdKfIID0Tp1Ig8_6S9irMN";
 
@@ -133,20 +133,28 @@ const Wheel = () => {
 
   const handleWalletConnect = useCallback(
     async (walletAddress) => {
-      const tokenBalance = await fetchTokenBalances(walletAddress);
-      const hasEnoughTokens = tokenBalance >= 10000;
+      // Fetch the user's details from the backend (including nextSpinTime)
+      const user = await dispatch(getUserDetails(walletAddress));
 
-      const freeSpins = hasEnoughTokens ? 4 : 1;
-      setFreeSpins(freeSpins);
-      await dispatch(register(walletAddress, freeSpins));
+      // Check if free spins need to be reset
+      const currentTime = new Date();
+      if (!user?.nextSpinTime || new Date(user?.nextSpinTime) <= currentTime) {
+        // Fetch token balance and decide the reset free spins count based on token balance
+        const tokenBalance = await fetchTokenBalances(walletAddress);
+        const hasEnoughTokens = tokenBalance >= 10000;
+        const freeSpins = hasEnoughTokens ? 4 : 1;
+
+        // Call the backend to reset free spins with the calculated count
+        await dispatch(resetFreeSpins(walletAddress, freeSpins));
+      }
+
+      // Fetch user details again after resetting spins
       await dispatch(getUserDetails(walletAddress));
-      // await dispatch(createOrUpdateReward(rewardData, walletAddress));
     },
     [fetchTokenBalances, dispatch]
   );
 
   useEffect(() => {
-    setSpinDisabled(!isConnected || user?.spins <= 0);
     const checkPhantomInstallation = async () => {
       const isPhantomInstalled = window.solana && window.solana.isPhantom;
       if (!isPhantomInstalled) {
@@ -162,21 +170,28 @@ const Wheel = () => {
     };
 
     checkPhantomInstallation();
-  }, [handleWalletConnect, isConnected, user, nextSpin]);
+  }, [handleWalletConnect]);
+
+  // useEffect(() => {
+  //   if (nextSpin === null) {
+  //     const init = async () => {
+  //       const savedWalletAddress = localStorage.getItem("walletAddress");
+  //       if (savedWalletAddress) {
+  //         console.log("Calling handleWalletConnect with:", savedWalletAddress);
+  //         await handleWalletConnect(savedWalletAddress);
+  //       }
+  //     };
+  //     init();
+  //   }
+  // }, [nextSpin, handleWalletConnect]);
 
   useEffect(() => {
-    const init = async () => {
-      const savedWalletAddress = localStorage.getItem("walletAddress");
-      if (nextSpin === null && savedWalletAddress) {
-        console.log("Calling handleWalletConnect with:", savedWalletAddress);
-        await handleWalletConnect(savedWalletAddress);
-      }
-    };
+    setSpinDisabled(!isConnected || user?.spins <= 0);
+  }, [isConnected, user]);
 
-    if (nextSpin === null) {
-      init(); // Call init only when nextSpin is null
-    }
-  }, [nextSpin, handleWalletConnect]);
+  useEffect(() => {
+    dispatch(getTodayRewardStats());
+  }, [dispatch]);
 
   const connectWallet = async () => {
     if (isConnected) {
@@ -196,25 +211,6 @@ const Wheel = () => {
       }
     }
   };
-
-  const useSpinDisabled = (isConnected) => {
-    const userDetails = useSelector((state) => state.userDetails || {});
-    const { user } = userDetails;
-
-    const [isDisabled, setIsDisabled] = useState(
-      !isConnected || user?.spins <= 0
-    );
-
-    useEffect(() => {
-      setIsDisabled(!isConnected || user?.spins <= 0);
-    }, [isConnected, user]);
-
-    return isDisabled;
-  };
-
-  useEffect(() => {
-    dispatch(getTodayRewardStats());
-  }, [dispatch]);
   return (
     <>
       <Box

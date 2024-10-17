@@ -12,6 +12,7 @@ import {
   userListReducer,
   userUpdateSpinsReducer,
   userUpdateProfileReducer,
+  resetFreeSpinsReducer,
 } from "./reducers/userReducer";
 
 const reducer = combineReducers({
@@ -23,6 +24,7 @@ const reducer = combineReducers({
   userUpdateProfile: userUpdateProfileReducer,
   rewardStatsToday: rewardStatsTodayReducer,
   reward: rewardReducer,
+  resetFreeSpins: resetFreeSpinsReducer,
 });
 
 const safeParseJSON = (item) => {

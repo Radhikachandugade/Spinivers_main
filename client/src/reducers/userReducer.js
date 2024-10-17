@@ -18,7 +18,15 @@ import {
   USER_UPDATE_PROFILE_SUCCESS,
   USER_UPDATE_PROFILE_FAIL,
   USER_CONNECTION_STATUS,
+  RESET_FREE_SPINS_REQUEST,
+  RESET_FREE_SPINS_SUCCESS,
+  RESET_FREE_SPINS_FAIL,
 } from "../constants/userConstants";
+
+const initialState = {
+  freeSpins: 0, // Default free spins count
+  nextSpinTime: null, // Default value for next spin time
+};
 
 // User login reducer
 export const userLoginReducer = (state = {}, action) => {
@@ -102,6 +110,28 @@ export const userUpdateProfileReducer = (state = {}, action) => {
       return state;
   }
 };
+
+export const resetFreeSpinsReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case RESET_FREE_SPINS_REQUEST:
+      return { ...state, loading: true };
+
+    case RESET_FREE_SPINS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        freeSpins: action.payload.freeSpins,
+        nextSpinTime: action.payload.nextSpinTime,
+      };
+
+    case RESET_FREE_SPINS_FAIL:
+      return { ...state, loading: false, error: action.payload };
+
+    default:
+      return state;
+  }
+};
+
 export const userConnectedReducer = (state = {}, action) => {
   switch (action.type) {
     case USER_CONNECTION_STATUS:

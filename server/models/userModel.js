@@ -50,8 +50,8 @@ userSchema.pre("save", function (next) {
     this.nextSpinTime = new Date(Date.now() + 1 * 60 * 1000); // 1 minute
   } else {
     // Set next spin time to 24 hours when no free spins are left
-    this.nextSpinTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-    // this.nextSpinTime = new Date(Date.now() + 1 * 60 * 1000); // 1 minute
+    // this.nextSpinTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    this.nextSpinTime = new Date(Date.now() + 1 * 60 * 1000); // 1 minute
   }
 
   // Ensure spins are correctly calculated before saving
