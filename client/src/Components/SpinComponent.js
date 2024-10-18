@@ -13,10 +13,11 @@ const SpinComponent = ({ isConnected }) => {
   const userDetails = useSelector((state) => state.userDetails || {});
   const { user } = userDetails;
 
-  const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
-  console.log(nextSpin);
+  const [nextSpinTime, setNextSpin] = useState(user?.nextSpinTime || null);
+  console.log("nextspin time", nextSpinTime);
+
   const [freeSpins, setFreeSpins] = useState(user?.freeSpins || 0);
-  // const [remainingTime, setRemainingTime] = useState(null);
+  // const [remainingTime, setRemainingTime] = useState(user?.nextSpinTime);
   const [walletAddress, setWalletAddress] = useState("");
 
   // Update nextSpin when user details change
@@ -31,17 +32,17 @@ const SpinComponent = ({ isConnected }) => {
   useEffect(() => {
     const savedWalletAddress = localStorage.getItem("walletAddress");
     setWalletAddress(savedWalletAddress);
-    if (!user?.nextSpinTime || !isConnected) return; // Only run timer if connected and nextSpinTime is set
+    if (!isConnected) return; // Only run timer if connected and nextSpinTime is set
 
     const interval = setInterval(() => {
       const now = new Date().getTime();
-      const nextTime = new Date(nextSpin).getTime();
+      const nextTime = new Date(nextSpinTime).getTime();
       const timeDifference = nextTime - now;
 
       if (timeDifference <= 0) {
         clearInterval(interval);
         setNextSpin(null);
-        // dispatch(resetFreeSpins(walletAddress, freeSpins));
+        dispatch(resetFreeSpins(walletAddress, freeSpins));
       } else {
         setNextSpin(timeDifference);
       }
@@ -66,8 +67,8 @@ const SpinComponent = ({ isConnected }) => {
   };
 
   const timeComponents =
-    nextSpin > 0
-      ? formatTimeComponents(nextSpin)
+    nextSpinTime > 0
+      ? formatTimeComponents(nextSpinTime)
       : { hours: "00", minutes: "00", seconds: "00" };
 
   return (
@@ -164,7 +165,7 @@ const SpinComponent = ({ isConnected }) => {
       </Box>
 
       {/* Countdown Timer */}
-      {isConnected && user?.nextSpinTime && nextSpin && (
+      {isConnected && user?.nextSpinTime && nextSpinTime && (
         <div id="countdown" style={{ textAlign: "center", marginTop: "2px" }}>
           <ul
             style={{
