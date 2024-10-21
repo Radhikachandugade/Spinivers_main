@@ -48,7 +48,7 @@ const SpinComponent = ({ isConnected }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [user?.nextSpinTime, dispatch, walletAddress, isConnected]);
+  }, [user, dispatch, walletAddress, isConnected]);
 
   const formatTimeComponents = (time) => {
     const hours = String(
