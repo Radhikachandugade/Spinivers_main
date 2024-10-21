@@ -131,29 +131,69 @@ const Wheel = () => {
     [alchemyApiKey]
   );
 
-  const handleWalletConnect = useCallback(
+  // Function to reset free spins
+  const handleResetFreeSpins = useCallback(
     async (walletAddress) => {
-      // Fetch the user's details from the backend (including nextSpinTime)
-      const user = await dispatch(getUserDetails(walletAddress));
+      try {
+        const currentTime = new Date();
+        const user = await dispatch(getUserDetails(walletAddress));
 
-      // Check if free spins need to be reset
-      const currentTime = new Date();
-      if (!user?.nextSpinTime || new Date(user?.nextSpinTime) <= currentTime) {
-        // Fetch token balance and decide the reset free spins count based on token balance
-        const tokenBalance = await fetchTokenBalances(walletAddress);
-        const hasEnoughTokens = tokenBalance >= 10000;
-        const freeSpins = hasEnoughTokens ? 4 : 1;
+        if (
+          !user?.nextSpinTime ||
+          new Date(user?.nextSpinTime) <= currentTime
+        ) {
+          const tokenBalance = await fetchTokenBalances(walletAddress);
+          const hasEnoughTokens = tokenBalance >= 10000;
+          const freeSpins = hasEnoughTokens ? 4 : 1;
 
-        // Call the backend to reset free spins with the calculated count
-        await dispatch(resetFreeSpins(walletAddress, freeSpins));
+          // Reset free spins with the calculated count
+          await dispatch(resetFreeSpins(walletAddress, freeSpins));
+        }
+      } catch (error) {
+        console.error("Error resetting free spins: ", error);
       }
-
-      // Fetch user details again after resetting spins
-      await dispatch(getUserDetails(walletAddress));
     },
-    [fetchTokenBalances, dispatch]
+    [dispatch]
   );
 
+  // Function to register user
+  const handleRegister = useCallback(
+    async (walletAddress) => {
+      try {
+        const user = await dispatch(getUserDetails(walletAddress));
+
+        if (!user && isConnected) {
+          const tokenBalance = await fetchTokenBalances(walletAddress);
+          const hasEnoughTokens = tokenBalance >= 10000;
+          const initialFreeSpins = hasEnoughTokens ? 4 : 1;
+
+          // Register the user with the calculated initial free spins
+          await dispatch(register(walletAddress, initialFreeSpins));
+        }
+      } catch (error) {
+        console.error("Error registering user: ", error);
+      }
+    },
+    [dispatch, isConnected]
+  );
+
+  // Main wallet connect function
+  const handleWalletConnect = useCallback(
+    async (walletAddress) => {
+      try {
+        // Fetch user details again after resetting spins
+        await dispatch(getUserDetails(walletAddress));
+      } catch (error) {
+        console.error(
+          "Error during wallet connection or user registration: ",
+          error
+        );
+      }
+    },
+    [dispatch]
+  );
+
+  // Check Phantom installation and auto-connect if wallet address is saved
   useEffect(() => {
     const checkPhantomInstallation = async () => {
       const isPhantomInstalled = window.solana && window.solana.isPhantom;
@@ -164,13 +204,19 @@ const Wheel = () => {
         if (savedWalletAddress) {
           setWalletAddress(savedWalletAddress);
           setIsConnected(true);
-          await handleWalletConnect(savedWalletAddress);
+
+          // Parallelize the calls for efficiency
+          await Promise.all([
+            handleWalletConnect(savedWalletAddress),
+            handleResetFreeSpins(savedWalletAddress),
+            handleRegister(savedWalletAddress),
+          ]);
         }
       }
     };
 
     checkPhantomInstallation();
-  }, [handleWalletConnect]);
+  }, [handleWalletConnect, handleResetFreeSpins, handleRegister]);
 
   // useEffect(() => {
   //   if (nextSpin === null) {
