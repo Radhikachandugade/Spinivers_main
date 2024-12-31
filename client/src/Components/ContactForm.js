@@ -44,7 +44,7 @@ const ContactForm = () => {
   //   };
 
   return (
-    <Flex direction="column" w={{ base: "80%", md: "50%" }} m="auto" my={10}>
+    <Flex direction="column" w={{ base: "80%", md: "50%" }} m="auto" my={5}>
       <form ref={form}>
         {/* NAME */}
         <FormControl id="name" isRequired>

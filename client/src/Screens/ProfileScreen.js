@@ -1,12 +1,9 @@
 import {
+  Avatar,
   Box,
-  Button,
+  Divider,
   Flex,
-  FormControl,
-  FormLabel,
-  Heading,
   Icon,
-  Input,
   Stack,
   Table,
   Tbody,
@@ -14,19 +11,24 @@ import {
   Th,
   Thead,
   Tr,
+  WrapItem,
   Td,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
   useToast,
-  Badge,
 } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
-import { Link as RouterLink } from "react-router-dom";
-import LeftArrow from "../Components/LeftArrow";
-import RightArrow from "../Components/RightArrow";
-import { useSelector, useDispatch } from "react-redux";
+import RichText from "../Components/RichText";
+import { HiCurrencyDollar } from "react-icons/hi";
+import { FaEdit } from "react-icons/fa";
 import { getUserDetails, updateUserProfile } from "../actions/userActions";
 import { getRewardsByWalletAddress } from "../actions/rewardActions";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { FaCheckCircle } from "react-icons/fa";
+import { FlatTree } from "framer-motion";
 
 const ProfileScreen = () => {
   const dispatch = useDispatch();
@@ -38,21 +40,18 @@ const ProfileScreen = () => {
   const reward = useSelector((state) => state.reward);
   const { rewards } = reward;
 
-  // console.log("reward from redux", rewards);
   const [name, setName] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
-
-  // console.log("profilescreen", walletAddress);
   const [isChanged, setIsChanged] = useState(false);
-  useEffect(() => {
-    // console.log("Reward State:", rewards);
-  }, [rewards]);
+  const [isEditing, setIsEditing] = useState(false); // State for toggling edit mode
+  const [isSaving, setIsSaving] = useState(false);
+
   useEffect(() => {
     const fetchRewards = async () => {
       await dispatch(getRewardsByWalletAddress(walletAddress));
     };
     fetchRewards();
-  }, [dispatch, walletAddress]);
+  }, [dispatch, walletAddress, rewards]);
 
   useEffect(() => {
     if (!user.name) {
@@ -71,22 +70,20 @@ const ProfileScreen = () => {
     setIsChanged(e.target.value !== user.name);
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     if (isChanged) {
-      dispatch(updateUserProfile(walletAddress, name));
+      setIsSaving(true); // Start saving
+      await dispatch(updateUserProfile(walletAddress, name));
       setIsChanged(false);
+      setIsSaving(false); // End saving
     }
     toast({
       position: "top",
-      // title: "User name updated",
       render: () => (
         <Flex
           backgroundColor="rgba(59, 9, 128,0.5)"
           boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-          // bg="rgb(59, 9, 128,0.3)"
-          // backdropFilter="blur(5px)"
           border="1px solid rgba(255,255,255,0.2)"
-          // boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
           color="white"
           p="2"
           borderRadius="2xl"
@@ -98,13 +95,22 @@ const ProfileScreen = () => {
           <Text>User name updated</Text>
         </Flex>
       ),
-      // status: "success",
       duration: 2000,
     });
 
-    navigate("/wheel");
+    setIsEditing(false); // Close form after saving
+  };
+  const handleBack = () => {
+    setIsEditing(false); // Close edit form and return to profile view
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A"; // Handle missing date
+    const date = new Date(dateString);
+    return isNaN(date.getTime())
+      ? "Invalid Date"
+      : date.toISOString().split("T")[0];
+  };
   return (
     <Flex
       direction="column"
@@ -113,90 +119,141 @@ const ProfileScreen = () => {
       p={20}
       gap={20}
     >
-      <Heading
-        as="h3"
-        size="2xl"
-        textAlign="center"
-        bgGradient="linear(to-l, rgba(111, 17, 242, 1) 0%, rgba(210, 181, 251, 1) 45%, rgba(242, 240, 245, 1) 49%)"
-        bgClip="text"
+      {/* Profile Details */}
+      <Stack
+        w="full"
+        p={10}
+        spacing={5}
+        bgImage="url(../assets/profileBg.jpg)"
+        boxShadow="rgba(200, 200, 200, 0.16) 0px 3px 6px, rgba(200, 200, 200, 0.23) 0px 3px 6px;"
+        borderRadius="3xl"
       >
-        Profile
-      </Heading>
+        {!isEditing ? (
+          <Flex alignItems="center" gap="5">
+            <WrapItem>
+              <Avatar name={walletAddress} />
+            </WrapItem>
+            <Stack>
+              <Text>{walletAddress}</Text>
 
-      {/* Form */}
-      <form style={{ width: "100%" }} onSubmit={handleSaveChanges}>
-        <Stack alignItems="center" width="100%" spacing={10}>
-          <Flex gap="20%" width="100%">
-            <FormControl id="name">
-              <FormLabel>Your Name</FormLabel>
-              <Input
-                id="name"
-                variant="filled"
-                placeholder="Enter your name"
-                value={name}
-                onChange={handleNameChange}
-                size="lg"
-                fontSize="md"
-                bg="#011627"
-                border="1px solid rgb(42, 35, 53)"
-                _focus={{ border: " 1px solid #bf96fa" }}
-                _hover={{ border: "1px solid rgb(42, 35, 53)" }}
-              />
-            </FormControl>
-            <FormControl id="wallet">
-              <FormLabel>Wallet Address</FormLabel>
-              <Input
-                isReadOnly
-                id="wallet"
-                variant="filled"
-                value={walletAddress}
-                placeholder="Wallet Address"
-                size="lg"
-                fontSize="md"
-                bg="#011627"
-                border="1px solid rgb(42, 35, 53)"
-                _focus={{ border: " 1px solid #bf96fa" }}
-                _hover={{ border: "1px solid rgb(42, 35, 53)" }}
-              />
-            </FormControl>
+              <Button
+                type="submit"
+                width="fit-content"
+                color="rgb(242, 240, 245)"
+                border="1px solid rgb(140, 65, 245)"
+                backgroundColor="rgb(59, 9, 128)"
+                borderRadius="16px"
+                boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
+                opacity="1"
+                _hover="none"
+                _active="none"
+                fontSize="1.2rem"
+                size={{ base: "sm", md: "sm", lg: "sm" }}
+                leftIcon={<FaEdit />}
+                colorScheme="teal"
+                variant="outline"
+                onClick={() => setIsEditing(true)} // Open the edit form
+              >
+                Edit Profile
+              </Button>
+            </Stack>
           </Flex>
-          <Button
-            type="submit"
-            isDisabled={!isChanged}
-            width="fit-content"
-            variant="solid"
-            color="rgb(242, 240, 245)"
-            border="1px solid rgb(140, 65, 245)"
-            backgroundColor="rgb(59, 9, 128)"
-            borderRadius="16px"
-            boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-            opacity="1"
-            _hover="none"
-            _active="none"
-            fontSize="1.2rem"
-            size={{ base: "md", md: "md", lg: "lg" }}
-          >
-            Save Changes
-          </Button>
-        </Stack>
-      </form>
+        ) : (
+          <form style={{ width: "100%" }} onSubmit={handleSaveChanges}>
+            <Stack alignItems="center" width="100%" spacing={10}>
+              <Flex gap="20%" width="100%">
+                <FormControl id="name">
+                  <FormLabel>Your Name</FormLabel>
+                  <Input
+                    id="name"
+                    variant="filled"
+                    placeholder="Enter your name"
+                    value={name}
+                    onChange={handleNameChange}
+                    size="lg"
+                    fontSize="md"
+                    bg="#011627"
+                    border="1px solid rgb(42, 35, 53)"
+                    _focus={{ border: "1px solid #bf96fa" }}
+                    _hover={{ border: "1px solid rgb(42, 35, 53)" }}
+                  />
+                </FormControl>
+                <FormControl id="wallet">
+                  <FormLabel>Wallet Address</FormLabel>
+                  <Input
+                    isReadOnly
+                    id="wallet"
+                    variant="filled"
+                    value={walletAddress}
+                    placeholder="Wallet Address"
+                    size="lg"
+                    fontSize="md"
+                    bg="#011627"
+                    border="1px solid rgb(42, 35, 53)"
+                    _focus={{ border: "1px solid #bf96fa" }}
+                    _hover={{ border: "1px solid rgb(42, 35, 53)" }}
+                  />
+                </FormControl>
+              </Flex>
+              <Flex alignItems="center" gap="5">
+                <Button
+                  type="submit"
+                  isDisabled={!isChanged}
+                  width="fit-content"
+                  variant="solid"
+                  color="rgb(242, 240, 245)"
+                  border="1px solid rgb(140, 65, 245)"
+                  backgroundColor="rgb(59, 9, 128)"
+                  borderRadius="16px"
+                  boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
+                  opacity="1"
+                  _hover="none"
+                  _active="none"
+                  fontSize="1.2rem"
+                  size={{ base: "sm", md: "sm", lg: "sm" }}
+                >
+                  Save Changes
+                </Button>
+                <Button
+                  type="button"
+                  width="fit-content"
+                  variant="outline"
+                  color="rgb(242, 240, 245)"
+                  border="1px solid rgb(140, 65, 245)"
+                  backgroundColor="rgb(59, 9, 128)"
+                  borderRadius="16px"
+                  boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
+                  opacity="1"
+                  _hover="none"
+                  _active="none"
+                  fontSize="1.2rem"
+                  size={{ base: "sm", md: "sm", lg: "sm" }}
+                  onClick={handleBack} // Close form and go back
+                >
+                  Back
+                </Button>
+              </Flex>
+            </Stack>
+          </form>
+        )}
 
-      {/* Rewards */}
-      <Flex direction="column" alignItems="center" w="100%" gap={5}>
-        <Flex w="xl" gap={3} alignItems="center">
-          <LeftArrow />
-          <Heading
-            as="h3"
-            size="lg"
-            fontWeight="semibold"
-            bgGradient="linear(to-l, rgba(111, 17, 242, 1) 0%, rgba(210, 181, 251, 1) 45%, rgba(242, 240, 245, 1) 49%)"
-            bgClip="text"
-            whiteSpace="nowrap"
-          >
-            My Rewards
-          </Heading>
-          <RightArrow />
+        <Divider borderColor="#ffffff5a" />
+        <Flex justifyContent="space-between">
+          <Stack direction="row">
+            <Text>Total Earnings: </Text>
+            <Stack direction="row" alignItems="center">
+              <HiCurrencyDollar color="lightgreen" size="20" />
+              <Text>0</Text>
+            </Stack>
+          </Stack>
+
+          <Text>Registered: {formatDate(user?.createdAt)}</Text>
         </Flex>
+      </Stack>
+
+      {/* Rewards Table */}
+      <Flex direction="column" alignItems="center" w="100%" gap={5}>
+        <RichText title="DASHBOARD" heading="My Rewards" />
         <Box
           bgColor="transparent"
           rounded="lg"
@@ -223,8 +280,8 @@ const ProfileScreen = () => {
                       <Td>{new Date(prize.wonAt).toLocaleDateString()}</Td>
                       <Td>{prize.name}</Td>
                       <Td>
-                        {prize.name === "Better Luck Next Time" ? null : ( // Render a blank space if the condition is true
-                          <Text>{prize.qty}</Text> // Render the quantity if the condition is false
+                        {prize.name === "Better Luck Next Time" ? null : (
+                          <Text>{prize.qty}</Text>
                         )}
                       </Td>
                     </Tr>

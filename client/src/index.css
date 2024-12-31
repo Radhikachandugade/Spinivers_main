@@ -1,0 +1,19 @@
+::-webkit-scrollbar {
+    width: 5px;
+transition: ease;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(140, 65, 245);
+    border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+    background: cyan;
+}
+
+.size {
+    font-size: 20px !important;
+    color: #f2f0f5;
+}

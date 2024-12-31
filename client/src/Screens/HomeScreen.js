@@ -1,275 +1,377 @@
 import React from "react";
 import BannerContent from "../Components/BannerContent";
-import { Box, Button, Flex, Image, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Icon,
+  Flex,
+  Stack,
+  Text,
+  IconButton,
+  useClipboard,
+  Image,
+} from "@chakra-ui/react";
 import SideContent from "../Components/SideContent";
 import ContentCard from "../Components/ContentCard";
-import LeftArrow from "../Components/LeftArrow";
-import RightArrow from "../Components/RightArrow";
-import CustomAccordion from "../Components/CustomAccordion";
-import ContactForm from "../Components/ContactForm";
-import Header from "../Components/Header";
+import FilledButton from "../Components/FilledButton";
+import OutlineButton from "../Components/OutlineButton";
+import { MdOutlineContentCopy } from "react-icons/md";
+import AbstractBg from "../Components/AbstractBg";
+import RichText from "../Components/RichText";
 
 const HomeScreen = () => {
+  const contractAddress = "EJBbh4xbAxE5CDNnr9jMcXTydjGJxazKB3ypLCmipump";
+  const { onCopy, hasCopied } = useClipboard(contractAddress);
   return (
     <>
-      <Header />
-
       {/* Banner */}
       <BannerContent />
+      {/* Mission */}
+      <AbstractBg
+        bgH="1500px"
+        children={
+          <Stack>
+            <SideContent
+              direction={{ base: "column", md: "row", lg: "row" }}
+              title="MISSION"
+              heading="Transforming Meme Coins"
+              content="In the ever-evolving world of cryptocurrency, platforms like pump.fun, degen.fund, and others have made it easier than ever to launch new meme coins. Every day, thousands of these tokens hit the market, each with its own unique story and community. However, many of these meme coins face a common challenge: they often get dumped and lack real utility, leaving holders with little incentive to stay engaged.
+              <br><br>
+              Spiniverse is here to change the game. We believe that meme coins can be more than just a fleeting trend. Our mission is to bring fun and excitement to the meme coin ecosystem by introducing the <span style='color:#f2f0f5'> Wheel of Fortune </span> game—a thrilling way for meme coin enthusiasts to engage with their tokens. Whether you're holding tokens launched by Slapuniverse, staking our native CG tokens, or purchasing bonus spins, you can unlock daily free spins and win amazing rewards."
+              src="../assets/transform.png"
+              arrow
+            />
+            <SideContent
+              direction={{
+                base: "column",
+                md: "row-reverse",
+                lg: "row-reverse",
+              }}
+              title="BENEFITS"
+              heading="Why Choose Spiniverse?"
+              content=" 
+              Here’s why Spiniverse is the ultimate choice for meme coin and gaming enthusiasts -
+              <br><br>
+              <ul>
+                  <li style='padding-bottom:10px'>
+                    <span style='color: #f2f0f5;'>Daily Free Spins</span>
+                    <p>Spiniverse rewards loyal holders of slapuniverse meme tokens and our native CG tokens with daily free spins on our exciting Wheel of Fortune. Simply by holding your favorite tokens, you’ll receive 4 daily free spins—giving you multiple chances to win every day. For those who stake our native CG tokens, you’ll enjoy 6 daily free spins, maximizing your chances to score big. Even if you're not a token holder or staker, you still get 1 daily free spin to join in on the fun!</p>
+                  </li>
+                  <li style='padding-bottom:10px'>
+                    <span style='color: #f2f0f5;'>Exciting Rewards</span>
+                    <p>The more you spin, the more you can win! Spiniverse offers a variety of rewards, from crypto airdrops to premium trading bots and hardware wallets. For a detailed breakdown of what’s up for grabs, check out our Rewards page.</p>
+                  </li>
+                  <li style='padding-bottom:10px'>
+                    <span style='color: #f2f0f5;'>Provably Fair Gameplay</span>
+                    <p>We believe in transparency and fairness. That’s why our Wheel of Fortune is provably fair, ensuring that every spin is truly random and offers everyone an equal chance to win. With Spiniverse, you can play with confidence, knowing that your experience is both secure and trustworthy.</p>
+                  </li>
+            </ul>"
+              src="../assets/rewards1.png"
+              arrow
+            />
+          </Stack>
+        }
+      />
 
-      {/* Partners */}
-      <Box
-        position="relative"
-        my={{ base: "10", md: "10", lg: "20" }}
-        h="full" // Adjust the height as needed
-      >
-        <Image
-          src="../assets/abstract.png"
+      {/* Wheel of Fortune Game */}
+      <RichText
+        title="OUR GAME"
+        heading="Unlock Exciting Rewards with Every Play!"
+        w="2xl"
+      />
+      <SideContent
+        direction={{ base: "column", md: "row-reverse" }}
+        w={{ base: "xs", md: "xl" }}
+        content="Spiniverse offers an exhilarating Wheel of Fortune game where you can win fantastic rewards . The more you spin, the more you can win! Spiniverse offers a variety of rewards, from meme coin and solana to premium trading bots and crypto hardware wallets.
+            <br><br>
+               <ul style='padding-left: 16px;' >
+                     <li style='padding-bottom: 10px;'>
+                        <span>Meme token Airdrops</span>
+                      </li>
+                      <li style='padding-bottom: 10px;'>
+                        <span>Solana</span>
+                      </li>
+                      <li style='padding-bottom: 10px;'>
+                        <span>Exclusive NFTs</span>
+                      </li>
+                      <li style='padding-bottom: 10px;'>
+                        <span>Free Amazon Gift Cards</span>
+                      </li>
+                      <li style='padding-bottom: 10px;'>
+                        <span>Premium Trading Bot</span>
+                      </li>
+                      <li style='padding-bottom: 10px;'>
+                        <span>Ledger Nano X Crypto Hardware Wallet</span>
+                      </li>
+                </ul>"
+        button={<FilledButton title="Learn More" src="/rewards" />}
+        src="../assets/wof.png"
+      />
+
+      {/* How to Play */}
+      <RichText
+        title="STEPS"
+        heading="How to Play ?"
+        description="Welcome to Spiniverse, where your meme tokens come to life with
+          exciting rewards and endless fun! Here’s a step-by-step guide on how
+          to get started and make the most of your Wheel of Fortune experience."
+      />
+
+      <AbstractBg
+        bgH="500px"
+        children={
+          <>
+            <Flex
+              gap={{ base: "10", md: "5", lg: "10" }}
+              mx={{ base: "14", md: "10", lg: "20" }}
+              marginTop={{ base: "0" }}
+              direction={{ base: "column", md: "row" }}
+            >
+              <ContentCard
+                imgPath="../assets/phantom.png"
+                title="1. Connect Phantom Wallet"
+                content2="This is essential to track your spins and rewards."
+                showButton={false}
+                fs="1.3rem"
+              />
+              <ContentCard
+                imgPath="../assets/free-spin.png"
+                title="2. Earn Free Spins or Buy Bonus Spins"
+                content2="Hold Slapuniverse tokens or stake CG tokens for daily free spins or buy bonus spins using Solana"
+                showButton={false}
+                fs="1.3rem"
+              />
+              {/* <ContentCard
+                imgPath="../assets/solana.png"
+                title="3. Buy Bonus Spins"
+                content2="Purchase additional Bonus Spins using SOL or CG tokens."
+                showButton={false}
+                fs="1.3rem"
+              /> */}
+              <ContentCard
+                imgPath="../assets/wheel.png"
+                title="3. Spin & Win!"
+                content2="Spin the Wheel and win exciting prizes!"
+                showButton={false}
+                fs="1.3rem"
+              />
+            </Flex>
+            <Flex justifyContent="center" mt="10">
+              <OutlineButton title="Learn More" src="/how-to-play" />
+            </Flex>
+          </>
+        }
+      />
+
+      {/* Banner */}
+      <Box position="relative" width="100%" overflow="hidden" my={10}>
+        {/* Video Background */}
+        <Box
+          as="video"
+          src="../assets/bgvideo1.mp4"
+          autoPlay
+          loop
+          muted
           position="absolute"
-          top="-28"
-          zIndex="1"
-          display={{ base: "none", md: "block" }}
+          top="0"
+          left="0"
+          width="100%"
+          height="100%"
+          objectFit="cover"
+          zIndex="-1"
         />
+
+        {/* Top and Bottom Gradient for Blending */}
         <Box
           position="absolute"
-          top="40"
+          top="0"
           left="0"
           right="0"
-          bottom="0"
-          bg="linear-gradient(180deg, rgba(110, 86, 255, 0) 0%, rgba(110, 87, 255, .46) 40%, rgba(145, 93, 255, 0) 70%)"
-          zIndex="-1"
-          w="full"
-          margin="auto"
-          h="600px"
-          opacity="0.6"
+          height="15%"
+          bgGradient="linear(to-b, rgb(5, 0, 10), rgba(5, 0, 10, 0))"
+          zIndex="0"
         />
+
+        {/* Content */}
         <Flex
           justifyContent="center"
-          gap="10"
-          zIndex="1"
+          direction="column"
+          alignItems="center"
+          gap="3"
+          my={{ base: 10, md: 10, lg: 20 }}
           position="relative"
-          direction={{ base: "column", md: "row" }}
-          mx={5}
+          zIndex="1"
         >
-          <ContentCard
-            imgPath="../assets/cgurusLogo.png"
-            // title="Casinogurus"
-            content="Online Casino Reviews Platform"
-            content2="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged"
-            src="https://www.casinogurus.org/"
-            boxSize={{ base: "50", md: "70", lg: "85" }}
-          />
-          <ContentCard
-            imgPath="../assets/suLogo.png"
-            // title="SLAP Universe"
-            content="Meme Coin Ecosystem"
-            content2="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged"
-            src="https://slapuniverse.com/"
-            boxSize={{ base: "50", md: "70", lg: "85" }}
-          />
-        </Flex>
-      </Box>
-
-      {/* Partnership */}
-      <Flex
-        justifyContent="space-around"
-        alignItems="center"
-        my={{ base: "10", md: "20", lg: "20" }}
-        mx={10}
-        id="about"
-        gap={{ base: "12", md: "10", lg: "10" }}
-        direction={{ base: "column", md: "row" }}
-      >
-        <Image
-          src="../assets/rewards.png"
-          height={{ base: "250px", md: "250px", lg: "350px" }}
-          w={{ base: "300px", md: "300px", lg: "auto" }}
-          display={{ base: "none", md: "block" }}
-        />
-        <SideContent
-          title="PARTNERSHIP"
-          heading="Our Gaming Partnership"
-          content="We are thrilled to announce our partnership with a leading gaming platform to bring you an exciting Wheel of Fortune game! This isn't just any game-it's designed to provide our token holders with exclusive benefits and rewards."
-        />
-        <Image
-          src="../assets/rewards.png"
-          height={{ base: "250px", md: "250px", lg: "350px" }}
-          w={{ base: "300px", md: "300px", lg: "auto" }}
-          display={{ base: "block", md: "none" }}
-        />
-      </Flex>
-
-      {/* Growth */}
-      <Flex
-        justifyContent="space-around"
-        alignItems="center"
-        my={10}
-        mx={{ base: "10", md: "10", lg: "0" }}
-        direction={{ base: "column", md: "row" }}
-        gap={{ base: "12", md: "10", lg: "10" }}
-      >
-        <Stack gap={5}>
-          <SideContent
-            title="ACCESS"
-            heading="Exclusive Early Access"
-            content="By holding any of our meme tokens, you gain exclusive early access to the Wheel of Fortune game. Be the first to experience the thrill and win exciting prizes!"
-          />
-          <Button
-            variant="solid"
-            color="rgb(242, 240, 245)"
-            border=" 1px solid rgb(140, 65, 245)"
-            backgroundColor="rgb(59, 9, 128)"
-            borderRadius="16px"
-            boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-            opacity="1"
-            _hover="none"
-            _active="none"
-            fontSize="1.2rem"
-            size={{ base: "md", md: "md", lg: "lg" }}
-            w="fit-content"
+          <Text
+            bgGradient="linear(to-l, rgba(111, 17, 242, 1) 0%, rgba(210, 181, 251, 1) 45%, rgba(242, 240, 245, 1) 49%)"
+            bgClip="text"
+            fontSize={{ base: "1.8rem", md: "3.2rem", lg: "3.5rem" }}
+            fontWeight="semibold"
+            w={{ base: "xs", md: "auto", lg: "auto" }}
+            m="auto"
           >
-            Claim Access
-          </Button>
-        </Stack>
-        <Image
-          src="../assets/growth.png"
-          height={{ base: "250px", md: "250px", lg: "350px" }}
-        />
-      </Flex>
-
-      {/* Benefits */}
-      <Stack textAlign="center" mt={20}>
-        <Flex alignItems="center" margin="auto" gap="3" w="sm">
-          <LeftArrow padding="0" />
-          <Text color="#f2f0f5" fontSize={{ base: "sm" }}>
-            BENEFITS
+            Auto-Burn Mechanism
           </Text>
-          <RightArrow padding="0" />
+          <Text
+            w={{ base: "xs", md: "lg", lg: "2xl" }}
+            margin="auto"
+            fontSize={{ base: "0.9rem", md: "1rem", lg: "1.12rem" }}
+            textAlign="center"
+          >
+            One of the standout features of the Spiniverse Wheel of Fortune game
+            is our innovative Auto-Burn Mechanism. This unique feature ensures
+            that the value of meme tokens is maintained and potentially
+            increased over time by systematically reducing the supply of tokens.
+          </Text>
+          <FilledButton title="Learn More" src="/auto-burn" />
         </Flex>
-        <Text
-          bgGradient="linear(to-l, rgba(111, 17, 242, 1) 18%, rgba(210, 181, 251, 1) 45%, rgba(242, 240, 245, 1) 49%)"
-          bgClip="text"
-          fontSize={{ base: "1.5rem", md: "2rem", lg: "3.25rem" }}
-          fontWeight="semibold"
-        >
-          Why Hold Slap Universe Meme Tokens?
-        </Text>
-      </Stack>
-      <Box
-        position="relative"
-        my={10}
-        h="full" // Adjust the height as needed
-      >
-        <Image
-          src="../assets/abstract.png"
-          position="absolute"
-          top="-10"
-          zIndex="-1"
-          display={{ base: "none", md: "block" }}
-        />
         <Box
           position="absolute"
-          top="40"
+          bottom="0"
           left="0"
           right="0"
-          bottom="0"
-          bg="linear-gradient(180deg, rgba(110, 86, 255, 0) 0%, rgba(110, 87, 255, .46) 40%, rgba(145, 93, 255, 0) 70%)"
-          zIndex="-1"
-          w="full"
-          margin="auto"
-          h="600px"
-          opacity="0.6"
+          height="15%"
+          bgGradient="linear(to-t, rgb(5, 0, 10), rgba(5, 0, 10, 0))"
+          zIndex="0"
         />
-
-        <Flex
-          gap={{ base: "10", md: "5", lg: "10" }}
-          m={{ base: "10", md: "10", lg: "20" }}
-          marginTop={{ base: "0" }}
-          direction={{ base: "column", md: "row" }}
-        >
-          <ContentCard
-            imgPath="../assets/wheel.png"
-            title="Exclusive Gaming Access"
-            content2="Be among the first to play our exclusive Wheel of Fortune game and spin for a chance to win amazing prizes and exclusive rewards!"
-            showButton={false}
-            fs="1.5rem"
-          />
-          <ContentCard
-            imgPath="../assets/airdrop.png"
-            title="Daily Rewards"
-            content2="Enjoy daily free spins and win amazing crypto rewards, including free BTC, high prizes, and exclusive airdrops of our meme token with every spin! "
-            showButton={false}
-            fs="1.5rem"
-          />
-          <ContentCard
-            imgPath="../assets/growing.png"
-            title="Growing Ecosystem"
-            content2="Become part of an ever-expanding community with 10 innovative meme tokens set to launch, each bringing new opportunities and excitement to our ecosystem!"
-            showButton={false}
-            fs="1.5rem"
-          />
-        </Flex>
       </Box>
 
-      {/* FAQs */}
-      <Flex
-        mx={{ base: "10", md: "20" }}
-        alignItems="center"
-        my={10}
-        id="faq"
-        direction={{ base: "column", md: "column", lg: "row" }}
-      >
-        <Stack>
-          <Text
-            bgGradient="linear(to-l, rgba(111, 17, 242, 1) 70%, rgba(210, 181, 251, 1) 90%, rgba(242, 240, 245, 1) 49%)"
-            bgClip="text"
-            fontSize={{ base: "1.5rem", md: "2rem", lg: "3.25rem" }}
-            fontWeight="semibold"
-          >
-            FAQs
-          </Text>
-          <Text mb={{ base: "5" }}>
-            Find answers to some common questions others have asked
-          </Text>
-          <CustomAccordion />
-        </Stack>
-        <Flex display={{ base: "none", md: "none", lg: "flex" }}>
-          <iframe
-            src="https://lottie.host/embed/8a062a45-71f2-4171-b697-9171cb879600/BLYtEiTGow.json"
-            width="600" // Set your desired width
-            height="600" // Set your desired height
-            title="Crypto Graphics"
-          />
-        </Flex>
-      </Flex>
-
-      {/* Contact */}
-      <Stack my={{ base: "10", md: "10", lg: "flex" }} id="contact">
-        <Stack textAlign="center" gap={{ base: "5" }}>
-          <Flex
-            alignItems="center"
-            margin="auto"
-            gap="3"
-            w={{ base: "sm", md: "xl" }}
-          >
-            <LeftArrow padding="0" />
-            <Text color="#f2f0f5" fontSize={{ base: "sm" }}>
-              CONTACT
+      {/*Out Token */}
+      <RichText
+        title=" OUR Token"
+        heading=" CG TOKEN"
+        description="Our native token, CG Token, is designed to power the entire Spiniverse ecosystem, offering a range of exciting utilities and rewards for our community. Whether you’re a meme coin enthusiast or an investor, CG Token has something valuable for you."
+      />
+      <SideContent
+        direction={{ base: "column", md: "row" }}
+        w={{ base: "xs", md: "auto" }}
+        title="USE CASE"
+        heading="Utility for CG Tokens"
+        content="<ul style='padding-left: 16px;' >
+                     <li style='padding-bottom: 10px;'>
+                        <span style='color:#f2f0f5'>Purchase Bonus Spins:</span> CG tokens can be used to buy bonus spins on the Spiniverse Wheel of Fortune game.
+                      </li>
+                      <li style='padding-bottom: 10px;'>
+                        <span style='color:#f2f0f5'> Daily Free Spins:</span> Staking CG tokens grants users 6 daily free spins</span>
+                      </li>
+                      <li style='padding-bottom: 10px;'>
+                        <span style='color:#f2f0f5'>List Meme Projects on the wheel:</span> Memecoin Developers can use CG tokens to list their meme projects on the Wheel of Fortune game. Please note project listings are subject to our team's approval to ensure only high-quality projects are featured, maintaining Spiniverse's integrity</span>
+                      </li>
+                  </ul>"
+        src="../assets/coin.png"
+        button={
+          <Stack alignItems="center" w={{ base: "xs", md: "auto" }} mt={5}>
+            <Text textAlign="center" fontSize={{ base: "md", md: "lg" }}>
+              Contract Address:
             </Text>
-            <RightArrow padding="0" />
-          </Flex>
+            onClick={onCopy}
+            <Flex
+              justifyContent="center"
+              alignItems="center"
+              gap={2}
+              onClick={onCopy}
+            >
+              <Text
+                cursor="pointer"
+                fontSize={{ base: "xs", md: "sm", lg: "lg" }}
+              >
+                {contractAddress}
+              </Text>
+              <IconButton
+                size="xs"
+                color="white"
+                bgColor="transparent"
+                _hover={{ bgColor: "transparent" }}
+                icon={
+                  hasCopied ? (
+                    <Text fontSize="xl">✓</Text>
+                  ) : (
+                    <Flex>
+                      <Icon
+                        as={MdOutlineContentCopy}
+                        boxSize={{ base: "4", md: "5", lg: "6" }}
+                        mr={2}
+                      />
+                    </Flex>
+                  )
+                }
+              />
+            </Flex>
+            <Flex gap="5">
+              <FilledButton title="Presale" src="/presale" />
+              <OutlineButton title="Tokenomics" src="/tokenomics" />
+            </Flex>
+          </Stack>
+        }
+        bgImage="url('../assets/1.png')"
+      />
+
+      {/* Banner */}
+      <Box position="relative" width="100%" overflow="hidden" my={5}>
+        {/* Video Background */}
+        <Box
+          as="video"
+          src="../assets/listing_video.mp4"
+          autoPlay
+          loop
+          muted
+          position="absolute"
+          width="100%"
+          height="100%"
+        />
+
+        {/* Top and Bottom Gradient for Blending */}
+        <Box
+          position="absolute"
+          top="0"
+          left="0"
+          right="0"
+          height="50%"
+          bgGradient="linear(to-b, rgb(5, 0, 10), rgba(5, 0, 10, 0))"
+          zIndex="0"
+        />
+
+        {/* Content */}
+        <Flex
+          justifyContent="center"
+          direction="column"
+          alignItems="center"
+          gap="3"
+          my={{ base: 10, md: 10, lg: 20 }}
+          position="relative"
+          zIndex="1"
+        >
           <Text
-            bgGradient="linear(to-l, rgba(111, 17, 242, 1) 35%, rgba(210, 181, 251, 1) 45%, rgba(242, 240, 245, 1) 49%)"
+            bgGradient="linear(to-l, rgba(111, 17, 242, 1) 0%, rgba(210, 181, 251, 1) 45%, rgba(242, 240, 245, 1) 49%)"
             bgClip="text"
-            fontSize={{ base: "1.5rem", md: "2rem", lg: "3.25rem" }}
+            fontSize={{ base: "1.8rem", md: "3.2rem", lg: "2.5rem" }}
             fontWeight="semibold"
+            w={{ base: "xs", md: "auto", lg: "auto" }}
+            m="auto"
           >
-            Get in Touch
+            Interested in Listing Your Meme Coin?
           </Text>
-        </Stack>
-        <ContactForm />
-        Please reach out to us with any inquiries using the form below
-      </Stack>
+          <Text
+            w={{ base: "xs", md: "lg", lg: "2xl" }}
+            margin="auto"
+            fontSize={{ base: "0.9rem", md: "1rem", lg: "1rem" }}
+            textAlign="center"
+          >
+            At Spiniverse, we offer meme coin developers the opportunity to list
+            their tokens on our Wheel of Fortune game, where players can win
+            exciting rewards, including your tokens.
+          </Text>
+          <FilledButton title="LIST YOUR COIN" src="/listing-form" />
+        </Flex>
+        <Box
+          position="absolute"
+          bottom="0"
+          left="0"
+          right="0"
+          height="50%"
+          bgGradient="linear(to-t, rgb(5, 0, 10), rgba(5, 0, 10, 0))"
+          zIndex="0"
+        />
+      </Box>
     </>
   );
 };

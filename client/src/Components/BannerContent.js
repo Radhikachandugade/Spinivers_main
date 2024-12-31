@@ -1,7 +1,4 @@
-import { Button, Flex, Stack, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import RightArrow from "./RightArrow";
-import LeftArrow from "./LeftArrow";
+import { Flex, Stack, Text } from "@chakra-ui/react";
 
 const BannerContent = () => {
   return (
@@ -11,7 +8,7 @@ const BannerContent = () => {
         direction="column"
         alignItems="center"
         gap="5"
-        my={{ base: 10, md: 10, lg: 20 }}
+        my={{ base: 10, md: 10, lg: 10 }}
       >
         <Stack textAlign="center">
           <Text
@@ -22,7 +19,7 @@ const BannerContent = () => {
             w={{ base: "xs", md: "auto", lg: "auto" }}
             m="auto"
           >
-            Casinogurus X SLAP Universe
+            Welcome to Spiniverse!
           </Text>
           <Text
             w={{ base: "xs", md: "lg", lg: "xl" }}
@@ -30,54 +27,34 @@ const BannerContent = () => {
             fontSize={{ base: "1rem", md: "1rem", lg: "1.12rem" }}
             textAlign="center"
           >
-            Dive into the future with Casinogurus X Slap Universe! Enjoy
-            exclusive early access to our Wheel of Fortune game and daily free
-            spins as a token holder. With exciting rewards and a growing
-            ecosystem, we’re redefining meme tokens and bringing unmatched value
-            to our community. Join us today and start spinning to win!
+            Welcome to Spiniverse, a platform that brings a new level of
+            excitement to the meme coin ecosystem. We’ve created a unique space
+            where holding meme tokens unlocks daily free spins in our Wheel of
+            Fortune game. Get ready to discover how Spiniverse can turn token
+            holding into an exciting adventure!
           </Text>
         </Stack>
-        <Flex gap={3} width={{ base: "sm", md: "3xl", lg: "5xl" }}>
-          <LeftArrow />
+        {/* <Flex
+          gap={3}
+          width={{ base: "0", md: "3xl", lg: "5xl" }}
+          justifyContent="center"
+        >
+          <Box display={{ base: "none", md: "flex" }} width="full">
+            <LeftArrow />
+          </Box>
           <Stack
-            direction={{ base: "column", md: "row" }}
+            direction={{ base: "row", md: "row" }}
             spacing={4}
+            whiteSpace="nowrap"
             align="center"
           >
-            <Button
-              as={RouterLink}
-              to="/wheel"
-              variant="solid"
-              color="rgb(242, 240, 245)"
-              border=" 1px solid rgb(140, 65, 245)"
-              backgroundColor="rgb(59, 9, 128)"
-              borderRadius="16px"
-              boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
-              opacity="1"
-              _hover="none"
-              _active="none"
-              fontSize="1.2rem"
-              size={{ base: "md", md: "md", lg: "lg" }}
-            >
-              Spin the Wheel
-            </Button>
-            <Button
-              variant="solid"
-              border=" 1px solid rgb(42, 35, 53)"
-              backgroundColor="rgba(0, 0, 0, 0)"
-              borderRadius="16px"
-              opacity="1"
-              color="rgb(242, 240, 245)"
-              _hover="none"
-              _active="none"
-              fontSize="1.2rem"
-              size={{ base: "md", md: "md", lg: "lg" }}
-            >
-              Learn More
-            </Button>
+            <FilledButton title="Get Started" />
+            <OutlineButton title="Learn More" />
           </Stack>
-          <RightArrow />
-        </Flex>
+          <Box display={{ base: "none", md: "block" }} width="full">
+            <RightArrow />
+          </Box>
+        </Flex> */}
       </Flex>
     </>
   );

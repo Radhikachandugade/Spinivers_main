@@ -1,15 +1,7 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useTransition,
-} from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   Box,
   Button,
-  useDisclosure,
-  Image,
   Text,
   Flex,
   Grid,
@@ -17,7 +9,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Link,
   Tr,
   Table,
   Thead,
@@ -27,16 +18,16 @@ import {
   Stack,
   Heading,
   Tooltip,
+  Link,
+  Image,
 } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import WheelComponent from "../Components/WheelComponent";
 import { Link as RouterLink } from "react-router-dom";
 import { Connection, PublicKey } from "@solana/web3.js";
 import {
-  login,
   register,
   getUserDetails,
-  updateSpins,
   resetFreeSpins,
 } from "../actions/userActions";
 import SpinTracker from "../Components/SpinTracker";
@@ -44,21 +35,13 @@ import { IoChevronDown } from "react-icons/io5";
 import { getTodayRewardStats } from "../actions/rewardActions";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import SpinComponent from "../Components/SpinComponent";
-import RewardSharing from "../Components/RewardSharing";
 
 const Wheel = () => {
-  const [display, setDisplay] = useState("-");
   const [walletAddress, setWalletAddress] = useState("");
   const [isSpinDisabled, setSpinDisabled] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
-  const canvasRef = useRef(null);
-  const [selectedPrize, setSelectedPrize] = useState(null);
-  const [screenshotUrl, setScreenshotUrl] = useState(null);
-  const rewardRef = useRef(null);
   const wheelRef = useRef(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useDispatch();
-  const [isPending, startTransition] = useTransition();
 
   const data = [
     { option: "WHISK Airdrop" },
@@ -73,20 +56,11 @@ const Wheel = () => {
     { option: "Maestro Bot Subscription " },
   ];
 
-  const userLogin = useSelector((state) => state.userLogin || {});
-  const { userInfo } = userLogin;
-
   const userDetails = useSelector((state) => state.userDetails || {});
   const { user } = userDetails;
 
   const rewardStatsToday = useSelector((state) => state.rewardStatsToday);
   const { stats } = rewardStatsToday;
-
-  // const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
-  // console.log(nextSpin);
-
-  const freeSpins = useSelector((state) => state.freeSpins);
-  const { resetfreeSpins = 0, nextSpinTime = null } = freeSpins || {};
 
   const alchemyApiKey = "3NfQ3MFPqhGdKfIID0Tp1Ig8_6S9irMN";
 
@@ -153,7 +127,7 @@ const Wheel = () => {
         console.error("Error resetting free spins: ", error);
       }
     },
-    [dispatch]
+    [dispatch, user?.nextSpinTime]
   );
 
   // Function to register user
@@ -218,19 +192,6 @@ const Wheel = () => {
     checkPhantomInstallation();
   }, [handleWalletConnect, handleResetFreeSpins, handleRegister]);
 
-  // useEffect(() => {
-  //   if (nextSpin === null) {
-  //     const init = async () => {
-  //       const savedWalletAddress = localStorage.getItem("walletAddress");
-  //       if (savedWalletAddress) {
-  //         console.log("Calling handleWalletConnect with:", savedWalletAddress);
-  //         await handleWalletConnect(savedWalletAddress);
-  //       }
-  //     };
-  //     init();
-  //   }
-  // }, [nextSpin, handleWalletConnect]);
-
   useEffect(() => {
     setSpinDisabled(!isConnected || user?.spins <= 0);
   }, [isConnected, user]);
@@ -259,17 +220,25 @@ const Wheel = () => {
   };
   return (
     <>
-      <Box
-        objectFit="cover"
-        backgroundRepeat="no-repeat"
-        // bgImage="url('../assets/82666.jpg')"
-      >
+      <Box objectFit="cover" backgroundRepeat="no-repeat">
         <Flex
-          justifyContent="flex-end"
+          justifyContent="space-between"
           py="5"
           px={10}
           // bgImage="url('../assets/82666.jpg')"
         >
+          <Link
+            to="/"
+            as={RouterLink}
+            onClick={() => {
+              window.scrollTo({ top: "0", behavior: "auto" });
+            }}
+          >
+            <Image
+              src="../assets/logo.png"
+              height={{ base: "40px", md: "50px" }}
+            />
+          </Link>
           {isConnected ? (
             <Menu>
               <MenuButton

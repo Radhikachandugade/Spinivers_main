@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateSpins, resetFreeSpins } from "../actions/userActions"; // Import the action
+import { resetFreeSpins } from "../actions/userActions"; // Import the action
 import { Box, Button, Tooltip } from "@chakra-ui/react";
 import { IoInformationCircleOutline } from "react-icons/io5";
 
 const SpinComponent = ({ isConnected }) => {
   const dispatch = useDispatch();
   const currentTime = new Date();
-  const userLogin = useSelector((state) => state.userLogin || {});
-  const { userInfo } = userLogin;
-
   const userDetails = useSelector((state) => state.userDetails || {});
   const { user } = userDetails;
 
   const [nextSpin, setNextSpin] = useState(user?.nextSpinTime || null);
   console.log(nextSpin);
   const [freeSpins, setFreeSpins] = useState(user?.freeSpins || 0);
-  // const [remainingTime, setRemainingTime] = useState(null);
   const [walletAddress, setWalletAddress] = useState("");
 
   // Update nextSpin when user details change
@@ -48,7 +44,7 @@ const SpinComponent = ({ isConnected }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [user, dispatch, walletAddress, isConnected]);
+  }, [user, dispatch, walletAddress, isConnected, user?.nextSpinTime]);
 
   const formatTimeComponents = (time) => {
     const hours = String(
@@ -164,7 +160,7 @@ const SpinComponent = ({ isConnected }) => {
       </Box>
 
       {/* Countdown Timer */}
-      {isConnected && user?.nextSpinTime && nextSpin && (
+      {isConnected && nextSpin && (
         <div id="countdown" style={{ textAlign: "center", marginTop: "2px" }}>
           <ul
             style={{

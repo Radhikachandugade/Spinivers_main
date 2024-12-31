@@ -83,6 +83,7 @@ const getUser = asyncHandler(async (req, res) => {
       spins: user.spins,
       playedSpins: user.playedSpins,
       nextSpinTime: user.nextSpinTime,
+      createdAt: user.createdAt,
     });
   } else {
     res.status(404);

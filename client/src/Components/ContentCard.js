@@ -29,7 +29,7 @@ const ContentCard = ({
       w="fit-content"
     >
       <Card
-        maxW={{ base: "sm", md: "xs", lg: "md" }}
+        maxW={{ base: "sm", md: "xs", lg: "sm" }}
         bgGradient="linear-gradient(rgb(5, 0, 10) 0%, rgb(27, 17, 37) 100%)"
         borderRadius="24px"
         boxShadow="none"

@@ -701,7 +701,7 @@ const WheelComponent = () => {
                 onChange={handleChange}
                 onClick={handleSubmit}
               >
-                Claim Reward
+                Collect Your Reward
               </Button>
             </Link>
           </ModalBody>
