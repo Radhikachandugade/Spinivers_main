@@ -48,7 +48,6 @@ export const getRewardsByWalletAddress =
   (walletAddress) => async (dispatch) => {
     try {
       const res = await axios.get(`/api/rewards/${walletAddress}`);
-      // console.log("Rewards fetched:", res.data); // Log the fetched rewards
       dispatch({
         type: GET_REWARDS_SUCCESS,
         payload: res.data,

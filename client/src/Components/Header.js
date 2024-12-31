@@ -21,9 +21,13 @@ import OutlineButton from "./OutlineButton";
 import { useState, useCallback, useEffect } from "react";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { IoChevronDown } from "react-icons/io5";
-import { getUserDetails } from "../actions/userActions";
 import MenuLink from "./MenuLink";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  register,
+  getUserDetails,
+  resetFreeSpins,
+} from "../actions/userActions";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -92,6 +96,49 @@ const Header = () => {
     },
     [dispatch]
   );
+  const handleResetFreeSpins = useCallback(
+    async (walletAddress) => {
+      try {
+        const currentTime = new Date();
+        const user = await dispatch(getUserDetails(walletAddress));
+
+        if (
+          !user?.nextSpinTime ||
+          new Date(user?.nextSpinTime) <= currentTime
+        ) {
+          const tokenBalance = await fetchTokenBalances(walletAddress);
+          const hasEnoughTokens = tokenBalance >= 10000;
+          const freeSpins = hasEnoughTokens ? 4 : 1;
+
+          // Reset free spins with the calculated count
+          await dispatch(resetFreeSpins(walletAddress, freeSpins));
+        }
+      } catch (error) {
+        console.error("Error resetting free spins: ", error);
+      }
+    },
+    [dispatch, user?.nextSpinTime]
+  );
+  // Function to register user
+  const handleRegister = useCallback(
+    async (walletAddress) => {
+      try {
+        const user = await dispatch(getUserDetails(walletAddress));
+
+        if (!user && isConnected) {
+          const tokenBalance = await fetchTokenBalances(walletAddress);
+          const hasEnoughTokens = tokenBalance >= 10000;
+          const initialFreeSpins = hasEnoughTokens ? 4 : 1;
+
+          // Register the user with the calculated initial free spins
+          await dispatch(register(walletAddress, initialFreeSpins));
+        }
+      } catch (error) {
+        console.error("Error registering user: ", error);
+      }
+    },
+    [dispatch, isConnected]
+  );
 
   useEffect(() => {
     const checkPhantomInstallation = async () => {
@@ -109,13 +156,35 @@ const Header = () => {
     };
     checkPhantomInstallation();
   }, [handleWalletConnect]);
+  useEffect(() => {
+    const checkPhantomInstallation = async () => {
+      const isPhantomInstalled = window.solana && window.solana.isPhantom;
+      if (!isPhantomInstalled) {
+        alert("Phantom Wallet is not installed");
+      } else {
+        const savedWalletAddress = localStorage.getItem("walletAddress");
+        if (savedWalletAddress) {
+          setWalletAddress(savedWalletAddress);
+          setIsConnected(true);
+
+          // Parallelize the calls for efficiency
+          await Promise.all([
+            handleWalletConnect(savedWalletAddress),
+            handleResetFreeSpins(savedWalletAddress),
+            handleRegister(savedWalletAddress),
+          ]);
+        }
+      }
+    };
+
+    checkPhantomInstallation();
+  }, [handleWalletConnect, handleResetFreeSpins, handleRegister]);
 
   const connectWallet = async () => {
     if (isConnected) {
       setWalletAddress("");
       setIsConnected(false);
       localStorage.removeItem("walletAddress");
-      navigate("/");
     } else {
       try {
         const resp = await window.solana.connect();
@@ -220,7 +289,7 @@ const Header = () => {
                 isTruncated
               >
                 <Text w="6.6rem" isTruncated>
-                  {user.name ? user.name : user.walletAddress}
+                  {user?.name ? user?.name : user?.walletAddress}
                 </Text>
               </MenuButton>
               <MenuList
@@ -232,15 +301,19 @@ const Header = () => {
                 opacity="1"
                 fontSize="1.2rem"
               >
-                <MenuItem backgroundColor="rgb(59, 9, 128)">
-                  <MenuLink url="/profile" label="Profile" />
+                <MenuItem
+                  as={RouterLink}
+                  to="/profile"
+                  backgroundColor="rgb(59, 9, 128)"
+                >
+                  Profile
                 </MenuItem>
                 {/* <MenuDivider /> */}
                 <MenuItem
                   backgroundColor="rgb(59, 9, 128)"
                   onClick={connectWallet}
                 >
-                  <MenuLink url="/profile" label="Disconnect" />
+                  Disconnect
                 </MenuItem>
               </MenuList>
             </Menu>

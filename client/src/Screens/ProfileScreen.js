@@ -34,7 +34,7 @@ const ProfileScreen = () => {
   const dispatch = useDispatch();
   const toast = useToast();
   const navigate = useNavigate();
-
+  const savedWalletAddress = localStorage.getItem("walletAddress");
   const userDetails = useSelector((state) => state.userDetails || {});
   const { user } = userDetails;
   const reward = useSelector((state) => state.reward);
@@ -46,44 +46,54 @@ const ProfileScreen = () => {
   const [isEditing, setIsEditing] = useState(false); // State for toggling edit mode
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    const fetchRewards = async () => {
-      await dispatch(getRewardsByWalletAddress(walletAddress));
-    };
-    fetchRewards();
-  }, [dispatch, walletAddress, rewards]);
+  // useEffect(() => {
+  //   const fetchRewards = async () => {
+  //     await dispatch(getRewardsByWalletAddress(walletAddress));
+  //   };
+  //   fetchRewards();
+  // }, [dispatch, walletAddress, rewards]);
 
   useEffect(() => {
-    if (!user.name) {
-      const savedWalletAddress = localStorage.getItem("walletAddress");
-      dispatch(getUserDetails(savedWalletAddress));
+    const fetchUser = async () => {
+      await dispatch(getUserDetails(savedWalletAddress));
       setWalletAddress(savedWalletAddress);
-      dispatch(getRewardsByWalletAddress(savedWalletAddress));
-    } else {
-      setName(user.name || "");
-      setWalletAddress(user.walletAddress || "");
-    }
-  }, [dispatch, user]);
+      await dispatch(getRewardsByWalletAddress(savedWalletAddress));
+    };
+    fetchUser();
+  }, [dispatch, savedWalletAddress, rewards, walletAddress]);
+
+  // useEffect(() => {
+  //   const savedWalletAddress = localStorage.getItem("walletAddress");
+  //   if (savedWalletAddress) {
+  //     dispatch(getUserDetails(savedWalletAddress));
+  //     setWalletAddress(savedWalletAddress);
+  //     dispatch(getRewardsByWalletAddress(savedWalletAddress));
+  //   } else if (user === null) {
+  //     return null;
+  //   }
+  // }, [dispatch, user, savedWalletAddress]);
 
   const handleNameChange = (e) => {
     setName(e.target.value);
     setIsChanged(e.target.value !== user.name);
   };
 
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = () => {
     if (isChanged) {
-      setIsSaving(true); // Start saving
-      await dispatch(updateUserProfile(walletAddress, name));
+      dispatch(updateUserProfile(walletAddress, name));
       setIsChanged(false);
-      setIsSaving(false); // End saving
     }
     toast({
       position: "top",
+      // title: "User name updated",
       render: () => (
         <Flex
           backgroundColor="rgba(59, 9, 128,0.5)"
           boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
+          // bg="rgb(59, 9, 128,0.3)"
+          // backdropFilter="blur(5px)"
           border="1px solid rgba(255,255,255,0.2)"
+          // boxShadow="rgba(111, 17, 242, 0.25) 0px 12px 16px 0px"
           color="white"
           p="2"
           borderRadius="2xl"
@@ -95,10 +105,11 @@ const ProfileScreen = () => {
           <Text>User name updated</Text>
         </Flex>
       ),
+      // status: "success",
       duration: 2000,
     });
 
-    setIsEditing(false); // Close form after saving
+    navigate("/wheel");
   };
   const handleBack = () => {
     setIsEditing(false); // Close edit form and return to profile view
@@ -111,6 +122,8 @@ const ProfileScreen = () => {
       ? "Invalid Date"
       : date.toISOString().split("T")[0];
   };
+
+  if (!walletAddress) return null;
   return (
     <Flex
       direction="column"
